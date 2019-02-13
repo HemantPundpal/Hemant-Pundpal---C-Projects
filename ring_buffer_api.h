@@ -55,7 +55,7 @@
  * Maximum number of ring buffers that can be created. This value can  be modified by the application
  * as per a platform and application requirements.
  */
-#define RINGBUFFER_MAX_COUNT   20U
+#define RINGBUFFER_MAX_COUNT   30U
 
 
 
