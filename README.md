@@ -26,6 +26,8 @@ ring_buffer.h
 
 ring_buffer.c
 - All Ring Buffer functions and variables are defined in this file.
+- The code is written such that it should be easy to use in multithreaded environment by protecting critcial sections.
+- Critcial section is unified (not distributed) in the functions and is kept as small as possible.
 
 error_assert.h
  - 'assert' macros are defined in this header file.
