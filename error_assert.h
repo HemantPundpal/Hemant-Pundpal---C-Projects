@@ -2,9 +2,8 @@
  * Name: asssert_error.h
  *
  * Description:
- * '_assert' or '_assert_abort' macros are defined in this header file.
- * '_assert' can be enabled or disabled with help of ERROR_ASSERT.
- * '_assert_abort' can be enabled or disabled with help of ERROR_ASSERT_ABORT.
+ * 'assert' macros are defined in this header file.
+ * 'assert' can be with or without abort().
  *
  * Author: Hemant Pundpal						Date: 12 Feb 2019
  *
