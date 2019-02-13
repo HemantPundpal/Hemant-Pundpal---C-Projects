@@ -39,4 +39,4 @@ error_assert.h
  
  APPLICATION - DEMO (using Ring Buffer API)
  ring_buffer_main.c
- - THIS IS A DEMO CODE JUST TO EXCERCISE / DEMONSTRATE THE RING BUFFER API
+ - THIS IS A DEMO CODE JUST TO EXCERCISE / DEMONSTRATE THE RING BUFFER API (may not follow all coding startards)
