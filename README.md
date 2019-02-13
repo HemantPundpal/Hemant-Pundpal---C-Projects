@@ -16,6 +16,7 @@ ring_buffer_api.h:
 ring_buffer_port.h:
 - All data types definations required by the ring buffer API are defined in this file.
 - The data types defination should be modified as per the platform used.
+- The standard library api are not abstracted. Standard library api abstraction will help portability.
 
 
 DESIGN - IMPLEMENTATION
