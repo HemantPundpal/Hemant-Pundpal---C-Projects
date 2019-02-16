@@ -8,6 +8,7 @@
  *
  */
 
+#include "ring_buffer_port.h"
 #include "error_assert.h"
 
 /* Assert Error with / without Abort. */
