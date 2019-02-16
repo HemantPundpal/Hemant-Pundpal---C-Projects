@@ -13,8 +13,6 @@
 #define __ERROR_ASSERT__
 
 
-#include "ring_buffer_api.h"
-
 #if (0 < ERROR_ASSERT)
 #define assert(exp) if(exp) {\
 _assert(#exp, __FILE__, __LINE__);\
