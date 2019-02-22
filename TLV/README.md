@@ -17,9 +17,11 @@ PHASE 2: TLV encoder and decoder V0.2 (in 3 to 4 days)
 - TLV decoder support for univeral (integer and UTF8 string) and application tag (application class and context specific class) numbers.
 - Including app data layer adstraction for the TLV decoding.
 - Optimization of the tlv_object.
+- UPDATES WILL NOT IMPACT THE API
 
 PHASE 2: TLV encoder and decoder V0.3 (to be planned)
 - TLV encoder and decoder support for univeral tag numbers - 'TAG_REAL', TAG_SET_OF and TAG_SEQUENCE_OF.
+- UPDATES WILL NOT IMPACT THE API
 
 PHASE 3: TLV encoder and decoder V0.4 (to be planned)
 - Initegration with serial driver and ring buffer.
