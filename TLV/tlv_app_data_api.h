@@ -47,7 +47,7 @@
 #define DISABLE_ERROR_CHECK       0
 
 /* TLV API return type definition. */
-#define TLV_STATUS                uint32_t
+typedef uint32_t                  TLV_STATUS;
 
 /* TLV API return values. */
 #define TLV_SUCCESS                0x0U
