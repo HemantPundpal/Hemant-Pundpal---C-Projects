@@ -2,7 +2,7 @@ Reference:
 1. https://en.wikipedia.org/wiki/X.690
 2. Information technology – ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER) 
 
-=======================================================================================================================================
+==================================================================================================================================================================
 
 
 PHASE 1: TLV encoder and decoder V0.1
@@ -25,7 +25,7 @@ PHASE 3: TLV encoder and decoder V0.4 (to be planned)
 - Initegration with serial driver and ring buffer.
 
 
-=======================================================================================================================================
+==================================================================================================================================================================
 
 
 TLV encoder and Decoder V0.1
