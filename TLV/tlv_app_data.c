@@ -306,13 +306,14 @@ uint32_t tlv_app_data_send(uint32_t tag)
 
     if (p_app_data->b_container)
     {
-        for (uint32_t i = 0; i < (p_app_data->p_tlv_object)->tlv_curr_encoded_object_length; i++)
+        uint32_t i = 0;
+        for (i = 0; i < (p_app_data->p_tlv_object)->tlv_curr_encoded_object_length; i++)
         {
             printf("%X , ", (p_app_data->p_tlv_object)->p_tlv_object_encoded_buffer[i]);
         }
         printf("\n");
 
-        for (uint32_t i = 0; i < p_app_data->child_count; i++)
+        for (i = 0; i < p_app_data->child_count; i++)
         {
             printf("Child %d - ", i);
             for (uint32_t y = 0; y < ((p_app_data->p_child_app_data[i])->p_tlv_object)->tlv_curr_encoded_object_length; y++)
