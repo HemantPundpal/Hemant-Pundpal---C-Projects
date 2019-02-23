@@ -57,11 +57,13 @@
 
 
 /* TLV encoder / decoder API does not support these errors. */
-//#define TLV_NOT_INITIALIZED        0x5U
-//#define TLV_TAG_CREATED            0x6U
-//#define TLV_TAG_NOT_CREATED        0x7U
-//#define TLV_MAX_CHILD_COUNT        0x8U
-//#define TLV_CHILD_NOT_FOUND        0x9U
+/* COMMENTED
+#define TLV_NOT_INITIALIZED        0x5U
+#define TLV_TAG_CREATED            0x6U
+#define TLV_TAG_NOT_CREATED        0x7U
+#define TLV_MAX_CHILD_COUNT        0x8U
+#define TLV_CHILD_NOT_FOUND        0x9U
+*/
 
 #define TLV_CANNOT_WRITE_VALUE     0xAU
 #define TLV_OBJECT_INVALID_PTR     0xBU
