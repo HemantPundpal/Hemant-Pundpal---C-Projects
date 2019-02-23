@@ -55,7 +55,7 @@ typedef void void_t;
 typedef enum
 {
     FALSE = 0x00000000,
-    TRUE,
+    TRUE
 } bool_t;
 #else
 typedef bool bool_t;
