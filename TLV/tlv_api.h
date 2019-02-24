@@ -7,7 +7,7 @@
  *
  * Note application can choose to use the app data abstraction from tlv encoder decoder by including tlv_app_data_api.h
  *
- * Author: Hemant Pundpal                                   Date: 21 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 24 Feb 2019
  *
  */
 #ifndef __TLV_API_H__
