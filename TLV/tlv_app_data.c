@@ -51,7 +51,7 @@ uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_
     {
         /* Initialize the app data. */
         p_tlv_app_data->b_container = FALSE;
-        p_tlv_app_data->data_size = app_data_size;
+        p_tlv_app_data->u_size.data_size = app_data_size;
         p_tlv_app_data->p_app_data = p_app_data_buffer;
 
         /* Allocate memory for tlv object to encode the app data into tlv object. */
@@ -62,11 +62,11 @@ uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_
             /* Create the TLV object. */
             if (app_data_tag == TAG_INTEGER_UNSIGNED)
             {
-                status = create_tlv_object(p_tlv_app_data->p_tlv_object, TAG_INTEGER, p_tlv_app_data->p_app_data, p_tlv_app_data->data_size);
+                status = create_tlv_object(p_tlv_app_data->p_tlv_object, TAG_INTEGER, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
             }
             else
             {
-                status = create_tlv_object(p_tlv_app_data->p_tlv_object, app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->data_size);
+                status = create_tlv_object(p_tlv_app_data->p_tlv_object, app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
             }
         }
         else
@@ -78,7 +78,7 @@ uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_
 
         if (status == TLV_SUCCESS)
         {
-            /* TLV object created successfuly. */
+            /* TLV object created successfully. */
             /* Add key: tag_number and value: p_tlv_app_data to the map. */
             tag_to_app_data_map[app_data_tag] = p_tlv_app_data;
             p_tlv_app_data->tag_number = app_data_tag;
@@ -112,8 +112,7 @@ uint32_t tlv_create_container_app_data(uint32_t container_app_data_tag)
     if (p_tlv_app_data != NULL)
     {
         p_tlv_app_data->b_container = TRUE;
-        p_tlv_app_data->child_count = 0;
-        p_tlv_app_data->data_size = 0;
+        p_tlv_app_data->u_size.child_count = 0;
         p_tlv_app_data->p_app_data = NULL;
 
         /* Allocate memory for tlv object to encode the container type app data into container tlv object. */
@@ -122,7 +121,7 @@ uint32_t tlv_create_container_app_data(uint32_t container_app_data_tag)
         if (p_tlv_app_data->p_tlv_object != NULL)
         {
             /* Create the TLV object. */
-            status = create_tlv_object(p_tlv_app_data->p_tlv_object, container_app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->data_size);
+            status = create_tlv_object(p_tlv_app_data->p_tlv_object, container_app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
         }
         else
         {
@@ -167,7 +166,7 @@ uint32_t tlv_add_child_to_container_app_data(uint32_t container_app_data_tag, ui
     if (p_tlv_app_data != NULL)
     {
         p_tlv_app_data->b_container = FALSE;
-        p_tlv_app_data->data_size = app_data_size;
+        p_tlv_app_data->u_size.data_size = app_data_size;
         p_tlv_app_data->p_app_data = p_app_data_buffer;
 
         /* Allocate memory for tlv object to encode the app data into tlv object. */
@@ -178,11 +177,11 @@ uint32_t tlv_add_child_to_container_app_data(uint32_t container_app_data_tag, ui
             /* Create the TLV object. */
             if (child_app_data_tag == TAG_INTEGER_UNSIGNED)
             {
-                status = create_tlv_object(p_tlv_app_data->p_tlv_object, TAG_INTEGER, p_tlv_app_data->p_app_data, p_tlv_app_data->data_size);
+                status = create_tlv_object(p_tlv_app_data->p_tlv_object, TAG_INTEGER, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
             }
             else
             {
-                status = create_tlv_object(p_tlv_app_data->p_tlv_object, child_app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->data_size);
+                status = create_tlv_object(p_tlv_app_data->p_tlv_object, child_app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
             }
         }
         else
@@ -202,8 +201,8 @@ uint32_t tlv_add_child_to_container_app_data(uint32_t container_app_data_tag, ui
             if (status == TLV_SUCCESS)
             {
                 /* update container app data with child app data details. */
-                p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->child_count] = p_tlv_app_data;
-                p_tlv_container_app_data->child_count++;
+                p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->u_size.child_count] = p_tlv_app_data;
+                p_tlv_container_app_data->u_size.child_count++;
                 p_tlv_app_data->tag_number = child_app_data_tag;
             }
         }
@@ -238,8 +237,8 @@ uint32_t tlv_add_child_tag_to_container_app_data(uint32_t container_app_data_tag
     if (status == TLV_SUCCESS)
     {
         /* update container app data with child app data details. */
-        p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->child_count] = p_tlv_child_app_data;
-        p_tlv_container_app_data->child_count++;
+        p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->u_size.child_count] = p_tlv_child_app_data;
+        p_tlv_container_app_data->u_size.child_count++;
     }
 
     return status;
@@ -254,7 +253,7 @@ uint32_t tlv_add_data_to_app_data(uint32_t app_data_tag)
     tlv_app_data_t * p_tlv_app_data = tag_to_app_data_map[app_data_tag];
 
     /* Update the application data to the TLV object. */
-    status = add_data_to_tlv_object(p_tlv_app_data->p_tlv_object, app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->data_size);
+    status = add_data_to_tlv_object(p_tlv_app_data->p_tlv_object, app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
 
     return status;
 }
@@ -267,7 +266,7 @@ uint32_t tlv_add_data_to_container_app_data(uint32_t container_app_data_tag, uin
 
     /* Get the container tag app data */
     tlv_app_data_t * p_container_app_data = tag_to_app_data_map[container_app_data_tag];
-    for (uint32_t i = 0; i < p_container_app_data->child_count; i++)
+    for (uint32_t i = 0; i < p_container_app_data->u_size.child_count; i++)
     {
         /* Search the child app data. */
         if ((p_container_app_data->p_child_app_data[i])->tag_number == child_app_data_tag)
@@ -275,7 +274,7 @@ uint32_t tlv_add_data_to_container_app_data(uint32_t container_app_data_tag, uin
             b_child_found = TRUE;
 
             /* update the child application data to the corresponding child tlv object. */
-            status = add_data_to_tlv_object((p_container_app_data->p_child_app_data[i])->p_tlv_object, child_app_data_tag, (p_container_app_data->p_child_app_data[i])->p_app_data, (p_container_app_data->p_child_app_data[i])->data_size);
+            status = add_data_to_tlv_object((p_container_app_data->p_child_app_data[i])->p_tlv_object, child_app_data_tag, (p_container_app_data->p_child_app_data[i])->p_app_data, (p_container_app_data->p_child_app_data[i])->u_size.data_size);
         }
     }
 
@@ -319,7 +318,7 @@ uint32_t tlv_app_data_send(uint32_t tag)
         }
         printf("\n");
 
-        for (i = 0; i < p_app_data->child_count; i++)
+        for (i = 0; i < p_app_data->u_size.child_count; i++)
         {
             printf("Child %d - ", i);
             if((p_app_data->p_child_app_data[i])->b_container == FALSE)
@@ -359,18 +358,46 @@ uint32_t tlv_app_data_send(uint32_t tag)
 }
 
 /* Function to parse app data from TLV data buffer (first found tlv object is parsed.) */
-uint32_t tlv_parse_app_data(const uint8_t * p_tlv_buffer, uint32_t * p_parsed_tag)
+uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag)
 {
     TLV_STATUS status = TLV_FAIL;
-    /* THIS FUNCTION IS NOT IMPLEMENTED YET, SHOULD BE UPDATED IN NEXT 3 to 4 DAYS. */
 
-    /* This function will be invoked by application, when application receives interrupt for TLV data buffer
-    received over the serial communication. */
+    tlv_object_t tlv_parsed_object;
+
+    /* Parse the first tag in the buffer. */
+    status = parse_tlv_object(p_tlv_data_buffer, buffer_length, &tlv_parsed_object);
+
+    if(status == TLV_SUCCESS)
+    {
+        /* return the parsed tag number (the app data tag number can be different than tlv tag number
+         * this requires better mapping, for now this is good). */
+        /* Get the app data map. */
+        tlv_app_data_t * p_tlv_app_data = tag_to_app_data_map[tlv_parsed_object.tlv_object_tag_number];
+
+        if((p_tlv_app_data == NULL) && (tlv_parsed_object.tlv_object_tag_number == TAG_INTEGER))
+        {
+            p_tlv_app_data = tag_to_app_data_map[TAG_INTEGER_UNSIGNED];
+        }
+
+        if(p_tlv_app_data != NULL)
+        {
+            /* Return the found tag. */
+            *p_parsed_tag = p_tlv_app_data->tag_number;
+            status = TLV_SUCCESS;
+        }
+        else
+        {
+            /* No tag found. */
+            status = TLV_NO_TAG_FOUND;
+        }
+    }
+
+    /* Return status. */
     return status;
 }
 
-/* Function to search tag and parse the tlv data buffer (if recersive set to true, then search for child app data).*/
-uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_buffer, uint32_t search_parse_tag, bool_t b_recersive)
+/* Function to search tag and parse the tlv data buffer (if recursive set to true, then search for child app data).*/
+uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recersive)
 {
     TLV_STATUS status = TLV_FAIL;
     /* THIS FUNCTION IS NOT IMPLEMENTED YET, SHOULD BE UPDATED IN NEXT 3 to 4 DAYS. */

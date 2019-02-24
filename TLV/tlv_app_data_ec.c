@@ -121,8 +121,8 @@ uint32_t tlv_add_child_to_container_app_data_ec(uint32_t container_app_data_tag,
 
     /* Check if container has max number of child added already. */
     tlv_app_data_t * p_container_app_data = tag_to_app_data_map[container_app_data_tag];
-    assert(p_container_app_data->child_count == MAX_CONTAINER_CHILD_COUNT);
-    if (p_container_app_data->child_count == MAX_CONTAINER_CHILD_COUNT)
+    assert(p_container_app_data->u_size.child_count == MAX_CONTAINER_CHILD_COUNT);
+    if (p_container_app_data->u_size.child_count == MAX_CONTAINER_CHILD_COUNT)
     {
         return TLV_MAX_CHILD_COUNT;
     }
@@ -234,7 +234,6 @@ uint32_t tlv_add_data_to_container_app_data_ec(uint32_t container_app_data_tag, 
         return TLV_TAG_NOT_CREATED;
     }
 
-
     TLV_STATUS status = TLV_FAIL;
     status = tlv_add_data_to_container_app_data(container_app_data_tag, child_app_data_tag);
 
@@ -262,19 +261,43 @@ uint32_t tlv_app_data_send_ec(uint32_t tag)
     TLV_STATUS status = TLV_FAIL;
     status = tlv_app_data_send(tag);
 
+    /* Return status. */
     return status;
 }
 
 /* Error check for function to parse app data from TLV data buffer (first found tlv object is parsed.) */
-uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_buffer, uint32_t * p_parsed_tag)
+uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag)
 {
-    TLV_STATUS status = TLV_FAIL;
+    /* Check if the tlv data buffer pointer is valid. */
+    assert(!p_tlv_data_buffer);
+    if(!p_tlv_data_buffer)
+    {
+        return TLV_DATA_BUFFER_INVALID;
+    }
 
+    /* Check if the tlv data buffer length is not zero. */
+    assert(!buffer_length);
+    if(!buffer_length)
+    {
+        return TLV_BAD_BUFFER_LENGTH;
+    }
+
+    /* Make sure parsed tag is valid pointer. */
+    assert(!p_parsed_tag);
+    if(!p_parsed_tag)
+    {
+        return TLV_TAG_PTR_INVALID;
+    }
+
+    TLV_STATUS status = TLV_FAIL;
+    status = tlv_parse_app_data(p_tlv_data_buffer, buffer_length, p_parsed_tag);
+
+    /* Return status. */
     return status;
 }
 
 /* Error check for function to search tag and parse the tlv data buffer (if recursive set to true, then search for child).*/
-uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_buffer, uint32_t search_parse_tag, bool_t b_recersive)
+uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recersive)
 {
     TLV_STATUS status = TLV_FAIL;
 

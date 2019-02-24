@@ -63,6 +63,10 @@ typedef uint32_t                  TLV_STATUS;
 #define TLV_CANNOT_WRITE_VALUE     0xAU
 #define TLV_CANNOT_CONTAIN_ITSELF  0xBU
 #define TLV_NOT_A_CONTAINER        0xCU
+#define TLV_BAD_BUFFER_LENGTH      0xDU
+#define TLV_TAG_PTR_INVALID        0XEU
+#define TLV_NO_TAG_FOUND           0xFU
+#define TLV_OBJECT_INVALID_PTR     0x10U
 
 
 #define TLV_FAIL                   0xFFFFFFFFU
@@ -147,13 +151,13 @@ uint32_t tlv_app_data_send(uint32_t tag);
  * - Function to parse app data from TLV data buffer (first found tlv object is parsed.)
  * - The parsed TLV object data will be auto updated to the application variables.
  */
-uint32_t tlv_parse_app_data(const uint8_t * p_tlv_buffer, uint32_t * p_parsed_tag);
+uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag);
 
 /* 
  * - Function to search tag and parse the tlv data buffer (if recursive set to true, then search for child).
  * - The searched and parsed TLV object data will be auto updated to the application variables.
  */
-uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_buffer, uint32_t search_parse_tag, bool_t b_recersive);
+uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recersive);
 
 /* Function to delete a tlv object and removes the mapping between the tlv object and the app data. */
 uint32_t tlv_delete_app_data(uint32_t tag);

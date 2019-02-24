@@ -23,14 +23,11 @@ typedef struct tlv_app_data
     {
         uint32_t        data_size;
         uint32_t        child_count;
-    };
+    }u_size;
 
-    union
-    {
-        uint8_t       * p_app_data;
-        struct tlv_app_data
-                      * p_child_app_data[MAX_CONTAINER_CHILD_COUNT];
-    };
+    uint8_t       * p_app_data;
+    struct tlv_app_data
+                  * p_child_app_data[MAX_CONTAINER_CHILD_COUNT];
 
     tlv_object_t  * p_tlv_object;
 }tlv_app_data_t;
@@ -66,13 +63,13 @@ uint32_t tlv_app_data_send(uint32_t tag);
  * - Function to parse app data from TLV data buffer (first found tlv object is parsed.)
  * - The parsed TLV object data will be auto updated to the application variables.
  */
-uint32_t tlv_parse_app_data(const uint8_t * p_tlv_buffer, uint32_t * p_parsed_tag);
+uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag);
 
 /*
  * - Function to search tag and parse the tlv data buffer (if recursive set to true, then search for child).
  * - The searched and parsed TLV object data will be auto updated to the application variables.
  */
-uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_buffer, uint32_t search_parse_tag, bool_t b_recersive);
+uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recersive);
 
 /* Function to delete a tlv object and removes the mapping between the tlv object and the app data. */
 uint32_t tlv_delete_app_data(uint32_t tag);
@@ -102,10 +99,10 @@ uint32_t tlv_add_data_to_container_app_data_ec(uint32_t container_app_data_tag, 
 uint32_t tlv_app_data_send_ec(uint32_t tag);
 
 /* Error check for function to parse app data from TLV data buffer (first found tlv object is parsed.) */
-uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_buffer, uint32_t * p_parsed_tag);
+uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag);
 
 /* Error check for function to search tag and parse the tlv data buffer (if recessive set to true, then search for child).*/
-uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_buffer, uint32_t search_parse_tag, bool_t b_recersive);
+uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recersive);
 
 /* Error check for function to delete a tlv object. */
 uint32_t tlv_delete_app_data_ec(uint32_t tag);

@@ -137,9 +137,31 @@ uint32_t add_data_to_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag
 /* Error check for parse tlv data buffer function. */
 uint32_t parse_tlv_object_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
-    TLV_STATUS status = TLV_FAIL;
+    /* Check TLV point is valid. */
+    assert(!p_tlv_object);
+    if (!p_tlv_object)
+    {
+        return TLV_OBJECT_INVALID_PTR;
+    }
 
-    return status;
+    assert(!p_tlv_data_buffer);
+    if(!p_tlv_data_buffer)
+    {
+        return TLV_DATA_BUFFER_INVALID;
+    }
+
+    /* Check buffer length. */
+    assert(!buffer_length);
+    if(!buffer_length)
+    {
+        return TLV_BAD_BUFFER_LENGTH;
+    }
+
+    TLV_STATUS status = TLV_FAIL;
+    status = parse_tlv_object_ec(p_tlv_data_buffer, buffer_length, p_tlv_object);
+
+    /* Return status. */
+    return status;;
 }
 
 /* Error check for search tlv encoded data object in the tlv data buffer function. */

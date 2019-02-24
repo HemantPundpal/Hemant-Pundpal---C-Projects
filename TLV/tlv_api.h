@@ -68,7 +68,10 @@
 #define TLV_CANNOT_WRITE_VALUE     0xAU
 #define TLV_CANNOT_CONTAIN_ITSELF  0xBU
 #define TLV_NOT_A_CONTAINER        0xCU
-#define TLV_OBJECT_INVALID_PTR     0xDU
+#define TLV_BAD_BUFFER_LENGTH      0xDU
+#define TLV_TAG_PTR_INVALID        0XEU
+#define TLV_NO_TAG_FOUND           0xFU
+#define TLV_OBJECT_INVALID_PTR     0x10U
 
 
 
