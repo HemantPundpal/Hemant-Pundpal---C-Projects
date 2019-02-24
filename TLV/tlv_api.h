@@ -50,7 +50,7 @@
 
 /* TLV API return values. */
 #define TLV_SUCCESS                0x0U
-#define TLV_BAD_DATA_BUFFER        0x1U
+#define TLV_DATA_BUFFER_INVALID    0x1U
 #define TLV_BAD_DATA_SIZE          0x2U
 #define TLV_NO_MEMORY              0x3U
 #define TLV_TAG_NOT_SUPPORTED      0x4U
