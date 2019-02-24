@@ -8,7 +8,7 @@
  * Application code should #include this file to use the app data layer.
  * Note application can choose to directly access TLV encoder and decode by including tlv_api.h
  *
- * Author: Hemant Pundpal                                   Date: 21 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 24 Feb 2019
  *
  */
 #ifndef __TLV_APP_DATA_API_H__
