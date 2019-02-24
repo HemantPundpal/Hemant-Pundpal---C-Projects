@@ -5,7 +5,7 @@
  * Any platform specific definitions should be added to this file.
  * Application code need not #include this file to use the tlv API.
  *
- * Author: Hemant Pundpal                               Date: 12 Feb 2019
+ * Author: Hemant Pundpal                               Date: 24 Feb 2019
  *
  */
 
