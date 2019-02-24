@@ -1,3 +1,8 @@
+Compiler settings - 
+-std=c11 -O2 -g3 -pedantic -pedantic-errors -Wall -Wextra -Wconversion -c -fmessage-length=0 -fPIC
+
+==================================================================================================================================================================
+
 Reference:
 1. https://en.wikipedia.org/wiki/X.690
 2. Information technology – ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER) 
