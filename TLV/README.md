@@ -10,6 +10,11 @@ PHASE 1: TLV encoder and decoder V0.1
 - App data layer that abstracts the TLV encoder and decoder from application.
 - Definite and indefinite length encoding
 
+
+PHASE 1: TLV encoder and decoder V0.1.1
+- Improved DEMO for (indefinite length) container within (indefinite length) container.
+- Improved Error handing for tlv_app_data_ec.h and tlv_ec.h
+
 Check API description below for details
 
 Upcoming updates:
