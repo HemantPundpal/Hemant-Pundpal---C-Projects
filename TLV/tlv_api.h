@@ -57,7 +57,7 @@
 
 
 /* TLV encoder / decoder API does not support these errors. */
-/* COMMENTED
+/*
 #define TLV_NOT_INITIALIZED        0x5U
 #define TLV_TAG_CREATED            0x6U
 #define TLV_TAG_NOT_CREATED        0x7U
@@ -66,8 +66,10 @@
 */
 
 #define TLV_CANNOT_WRITE_VALUE     0xAU
-#define TLV_OBJECT_INVALID_PTR     0xBU
-#define TLV_TAG_NOT_A_CONTAINER    0xCU
+#define TLV_CANNOT_CONTAIN_ITSELF  0xBU
+#define TLV_NOT_A_CONTAINER        0xCU
+#define TLV_OBJECT_INVALID_PTR     0xDU
+
 
 
 #define TLV_FAIL                   0xFFFFFFFFU

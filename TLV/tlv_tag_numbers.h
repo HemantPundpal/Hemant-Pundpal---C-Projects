@@ -67,14 +67,15 @@
 
 
 /********** APPLICATION TAG NUMBERS ***********/
-/* Application tag numbers are in range <32 to 254> (127). */
-/* CAUTION: Application should not have tag numbers 0 to 31 to avoid conflict with universal tag numbers */
-/* Application tag numbers are encoded in 2 byte or 3 byte (16 bits or 24 bits) TLV object tags. */
+/* - Application tag numbers are in range <32 to 254> (127). */
+/* - CAUTION: Application should not have tag numbers 0 to 31 to avoid conflict with universal tag numbers */
+/* - Application tag numbers are encoded in 2 byte or 3 byte (16 bits or 24 bits) TLV object tags. */
 
 /*
- * - Application class class tag numbers range <32 to 158>.
+ * - Application class tag numbers range <32 to 158>.
  */
 #define TAG_APP_TXN_INFO            32U /* Supported. */
+#define TAG_APP_ADDNL_TXN_INFO      33U /* Supported. */
 /* Add more application or context specific tag numbers here. */
 
 #define TAG_APP_CLS_MAX             158U
@@ -83,8 +84,8 @@
  * - Context specific class tag numbers range <159 to 254>.
  */
 /* Add context specific tag numbers here. */
-#define TAG_CONT_SPCF_UINT_16       159U
-#define TAG_CONT_SPCF_UINT_8        160U
+#define TAG_CONT_SPCF_UINT_16       159U /* Supported. */
+#define TAG_CONT_SPCF_UINT_8        160U /* Supported. */
 
 #define TAG_CONT_SPCF_CLS_MAX       254U
 

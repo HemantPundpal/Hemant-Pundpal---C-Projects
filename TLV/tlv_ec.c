@@ -69,11 +69,24 @@ uint32_t add_tlv_object_to_tlv_container_ec(tlv_object_t * p_container_tlv_objec
         return TLV_OBJECT_INVALID_PTR;
     }
 
+    /* Check if the TLV object is a container. */
+    assert(p_container_tlv_object->b_tlv_container_object == FALSE);
+    if(p_container_tlv_object->b_tlv_container_object == FALSE)
+    {
+        return TLV_NOT_A_CONTAINER;
+    }
+
     /* Check if child TLV pointed is valid. */
     assert(!p_child_tlv_object);
     if (!p_child_tlv_object)
     {
         return TLV_OBJECT_INVALID_PTR;
+    }
+
+    assert(p_container_tlv_object->tlv_object_tag_number == p_child_tlv_object->tlv_object_tag_number);
+    if(p_container_tlv_object->tlv_object_tag_number == p_child_tlv_object->tlv_object_tag_number)
+    {
+        return TLV_CANNOT_CONTAIN_ITSELF;
     }
 
     TLV_STATUS status = TLV_FAIL;

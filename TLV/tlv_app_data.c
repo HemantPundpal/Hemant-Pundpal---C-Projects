@@ -300,28 +300,49 @@ uint32_t tlv_app_data_send(uint32_t tag)
      * - The serial driver reads the tlv encoded buffer from the ring buffer and send on the serial 
      * Communication channel.
      * - This function will be updated to communicate with serial driver, currently is used for
-     * testing TLv encoded object.
+     * testing tlv encoded object.
      */
     tlv_app_data_t * p_app_data = tag_to_app_data_map[tag];
 
     if (p_app_data->b_container)
     {
+        /* Just for test console printing statements. */
+        if(!((p_app_data->p_tlv_object)->b_tlv_object_length_definite))
+        {
+            printf("Indefinite length TLV object. \n");
+        }
+
         uint32_t i = 0;
         for (i = 0; i < (p_app_data->p_tlv_object)->tlv_curr_encoded_object_length; i++)
         {
-            printf("%X , ", (p_app_data->p_tlv_object)->p_tlv_object_encoded_buffer[i]);
+            printf("0x%X , ", (p_app_data->p_tlv_object)->p_tlv_object_encoded_buffer[i]);
         }
         printf("\n");
 
         for (i = 0; i < p_app_data->child_count; i++)
         {
             printf("Child %d - ", i);
-            for (uint32_t y = 0; y < ((p_app_data->p_child_app_data[i])->p_tlv_object)->tlv_curr_encoded_object_length; y++)
+            if((p_app_data->p_child_app_data[i])->b_container == FALSE)
             {
-                printf("%X , ",((p_app_data->p_child_app_data[i])->p_tlv_object)->p_tlv_object_encoded_buffer[y]);
+                for (uint32_t y = 0; y < ((p_app_data->p_child_app_data[i])->p_tlv_object)->tlv_curr_encoded_object_length; y++)
+                {
+                    printf("0x%X , ",((p_app_data->p_child_app_data[i])->p_tlv_object)->p_tlv_object_encoded_buffer[y]);
+                }
+                printf("\n");
             }
-            printf("\n");
+            else
+            {
+                printf("Container within a container. \n");
+                tlv_app_data_send((p_app_data->p_child_app_data[i])->tag_number);
+            }
         }
+        printf("\n");
+
+        if(!((p_app_data->p_tlv_object)->b_tlv_object_length_definite))
+        {
+            printf("0x%X (END OF CONTEXT for indefinite length)", TAG_END_OF_CONTENT);
+        }
+
         printf("\n");
     }
     else
@@ -333,6 +354,7 @@ uint32_t tlv_app_data_send(uint32_t tag)
         printf("\n");
     }
 
+    /* Return status. */
     return status;
 }
 

@@ -104,7 +104,21 @@ uint32_t tlv_add_child_to_container_app_data_ec(uint32_t container_app_data_tag,
     {
         return TLV_TAG_NOT_CREATED;
     }
-    
+
+    /* Check the tag is container type. */
+    assert((tag_to_app_data_map[container_app_data_tag])->b_container == FALSE);
+    if((tag_to_app_data_map[container_app_data_tag])->b_container == FALSE)
+    {
+        return TLV_NOT_A_CONTAINER;
+    }
+
+    /* Container can not have itself as child. */
+    assert(container_app_data_tag == child_app_data_tag);
+    if(container_app_data_tag == child_app_data_tag)
+    {
+        return TLV_CANNOT_CONTAIN_ITSELF;
+    }
+
     /* Check if container has max number of child added already. */
     tlv_app_data_t * p_container_app_data = tag_to_app_data_map[container_app_data_tag];
     assert(p_container_app_data->child_count == MAX_CONTAINER_CHILD_COUNT);
@@ -120,7 +134,6 @@ uint32_t tlv_add_child_to_container_app_data_ec(uint32_t container_app_data_tag,
         return TLV_DATA_BUFFER_INVALID;
     }
 
-    
     /* Check TLV tag and constraints for child tag. */
     TLV_STATUS status = TLV_FAIL;
     status = check_tag(child_app_data_tag, app_data_size);
@@ -152,11 +165,25 @@ uint32_t tlv_add_child_tag_to_container_app_data_ec(uint32_t container_app_data_
         return TLV_TAG_NOT_CREATED;
     }
 
+    /* Check the tag is container type. */
+    assert((tag_to_app_data_map[container_app_data_tag])->b_container == FALSE);
+    if((tag_to_app_data_map[container_app_data_tag])->b_container == FALSE)
+    {
+        return TLV_NOT_A_CONTAINER;
+    }
+
     /* Check if the TLV child tag is not created already. */
     assert(tag_to_app_data_map[child_app_data_tag] == NULL);
     if (tag_to_app_data_map[child_app_data_tag] == NULL)
     {
         return TLV_TAG_NOT_CREATED;
+    }
+
+    /* Container can not have itself as child. */
+    assert(container_app_data_tag == child_app_data_tag);
+    if(container_app_data_tag == child_app_data_tag)
+    {
+        return TLV_CANNOT_CONTAIN_ITSELF;
     }
 
     TLV_STATUS status = TLV_FAIL;
@@ -177,8 +204,8 @@ uint32_t tlv_add_data_to_app_data_ec(uint32_t app_data_tag)
     }
 
     /* Check if the TLV tag is not created already or is of container type. */
-    assert((tag_to_app_data_map[app_data_tag] == NULL) && ((tag_to_app_data_map[app_data_tag])->b_container != TRUE));
-    if ((tag_to_app_data_map[app_data_tag] == NULL) && ((tag_to_app_data_map[app_data_tag])->b_container != TRUE))
+    assert((tag_to_app_data_map[app_data_tag] == NULL) && ((tag_to_app_data_map[app_data_tag])->b_container == FALSE));
+    if ((tag_to_app_data_map[app_data_tag] == NULL) && ((tag_to_app_data_map[app_data_tag])->b_container == FALSE))
     {
         return TLV_CANNOT_WRITE_VALUE;
     }
@@ -246,7 +273,7 @@ uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_buffer, uint32_t * p_parsed
     return status;
 }
 
-/* Error check for function to search tag and parse the tlv data buffer (if recersive set to true, then search for child).*/
+/* Error check for function to search tag and parse the tlv data buffer (if recursive set to true, then search for child).*/
 uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_buffer, uint32_t search_parse_tag, bool_t b_recersive)
 {
     TLV_STATUS status = TLV_FAIL;
@@ -290,6 +317,11 @@ static uint32_t check_tag(uint32_t tag_number, uint32_t app_data_size)
         }
         break;
         case TAG_APP_TXN_INFO:
+        {
+            /* do nothing */
+        }
+        break;
+        case TAG_APP_ADDNL_TXN_INFO:
         {
             /* do nothing */
         }

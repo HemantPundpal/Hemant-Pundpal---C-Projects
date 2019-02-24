@@ -3,10 +3,10 @@
  *
  * Description:
  * All definitions and api function declarations required for the tlv app data layer.
- * This function abstrats the TLV encoder and decoder for the application.
+ * This function abstracts the TLV encoder and decoder for the application.
  *
  * Application code should #include this file to use the app data layer.
- * Note application can choose to diectly access TLV encoder and decode by including tlv_api.h
+ * Note application can choose to directly access TLV encoder and decode by including tlv_api.h
  *
  * Author: Hemant Pundpal                                   Date: 21 Feb 2019
  *
@@ -15,7 +15,7 @@
 #define __TLV_APP_DATA_API_H__
 
 #include "tlv_port.h"
-#include "tlv_tag_numbers.h" /* app data layer can define application friendly tags and abatract tlv standard tags from application */
+#include "tlv_tag_numbers.h" /* app data layer can define application friendly tags and abstract tlv standard tags from application */
 
 
 /*
@@ -61,6 +61,8 @@ typedef uint32_t                  TLV_STATUS;
 #define TLV_MAX_CHILD_COUNT        0x8U
 #define TLV_CHILD_NOT_FOUND        0x9U
 #define TLV_CANNOT_WRITE_VALUE     0xAU
+#define TLV_CANNOT_CONTAIN_ITSELF  0xBU
+#define TLV_NOT_A_CONTAINER        0xCU
 
 
 #define TLV_FAIL                   0xFFFFFFFFU

@@ -75,7 +75,7 @@ uint32_t add_tlv_object_to_tlv_container(tlv_object_t * p_container_tlv_object, 
         (p_container_tlv_object->p_tlv_child_tlv_object_list)->p_child_tlv_object_next = p_child_tlv_object;
     }
 
-    /* incease child count. */
+    /* increase child count. */
     p_container_tlv_object->tlv_child_Count++;
     status = TLV_SUCCESS;
 

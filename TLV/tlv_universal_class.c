@@ -44,7 +44,7 @@ uint32_t create_universal_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_t
             else
             {
                 /* Indefinite length in primitive tag number is not allowed. */
-                status = TLV_TAG_NOT_A_CONTAINER;
+                status = TLV_NOT_A_CONTAINER;
             }
             
         }
@@ -61,7 +61,7 @@ uint32_t create_universal_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_t
             else
             {
                 /* Indefinite length in primitive tag number is not allowed. */
-                status = TLV_TAG_NOT_A_CONTAINER;
+                status = TLV_NOT_A_CONTAINER;
             }
         }
         break;

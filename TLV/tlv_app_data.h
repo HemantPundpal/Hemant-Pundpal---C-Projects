@@ -3,7 +3,7 @@
  *
  * Description:
  * All definitions and api function declarations required for the tlv app data layer.
- * This function abstracts the TLV encoder and decoder for the application.
+ * These functions abstracts the TLV encoder and decoder for the application.
  *
  * Note application can choose to directly access TLV encoder and decode by including tlv_api.h
  *

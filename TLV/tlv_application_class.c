@@ -176,10 +176,10 @@ static uint32_t create_definite_length_application_tlv_object(tlv_object_t * p_t
 
     /* Allocate the TLV encoder buffer. */
 
-    uint32_t tag_octets = 0;
+    uint32_t tag_octets = 0U;
     tag_octets = get_tag_octets(tlv_tag);
 
-    uint32_t length_octets = 0;
+    uint32_t length_octets = 0U;
     length_octets = get_length_octets(buffer_length);
 
     uint32_t tlv_encoded_buffer_length = tag_octets + length_octets + buffer_length;
