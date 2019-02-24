@@ -41,7 +41,7 @@ uint32_t create_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag, uin
         assert(!p_tlv_value);
         if (!p_tlv_value)
         {
-            return TLV_BAD_DATA_BUFFER;
+            return TLV_DATA_BUFFER_INVALID;
         }
     }
 
@@ -110,7 +110,7 @@ uint32_t add_data_to_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag
     assert(!p_tlv_value);
     if (!p_tlv_value)
     {
-        return TLV_BAD_DATA_BUFFER;
+        return TLV_DATA_BUFFER_INVALID;
     }
 
     /* Check buffer (value) length is valid. */
