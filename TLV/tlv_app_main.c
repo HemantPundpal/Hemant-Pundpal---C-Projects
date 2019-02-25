@@ -176,7 +176,7 @@ int main()
 
     if (TLV_SUCCESS == tlv_create_container_app_data(TAG_APP_ADDNL_TXN_INFO))
     {
-        if (TLV_SUCCESS == tlv_add_child_to_container_app_data(TAG_APP_ADDNL_TXN_INFO, (uint8_t *)addnl_txn_info.s_txn_tax_info, (MAX_TXN_REF_LEN + 1U), TAG_UTF8STRING))
+        if (TLV_SUCCESS == tlv_add_child_to_container_app_data(TAG_APP_ADDNL_TXN_INFO, (uint8_t *)addnl_txn_info.s_txn_tax_info, (MAX_ADDNL_TXN_REF_LEN + 1U), TAG_UTF8STRING))
         {
             printf("Child added successfully \n");
         }
