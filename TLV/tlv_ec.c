@@ -158,7 +158,7 @@ uint32_t parse_tlv_object_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_
     }
 
     TLV_STATUS status = TLV_FAIL;
-    status = parse_tlv_object_ec(p_tlv_data_buffer, buffer_length, p_tlv_object);
+    status = parse_tlv_object(p_tlv_data_buffer, buffer_length, p_tlv_object);
 
     /* Return status. */
     return status;;
