@@ -361,36 +361,10 @@ uint32_t tlv_app_data_send(uint32_t tag)
 uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag)
 {
     TLV_STATUS status = TLV_FAIL;
+    /* THIS FUNCTION IS NOT IMPLEMENTED YET, SHOULD BE UPDATED IN NEXT 3 to 4 DAYS. */
 
-    tlv_object_t tlv_parsed_object;
-
-    /* Parse the first tag in the buffer. */
-    status = parse_tlv_object(p_tlv_data_buffer, buffer_length, &tlv_parsed_object);
-
-    if(status == TLV_SUCCESS)
-    {
-        /* return the parsed tag number (the app data tag number can be different than tlv tag number
-         * this requires better mapping, for now this is good). */
-        /* Get the app data map. */
-        tlv_app_data_t * p_tlv_app_data = tag_to_app_data_map[tlv_parsed_object.tlv_object_tag_number];
-
-        if((p_tlv_app_data == NULL) && (tlv_parsed_object.tlv_object_tag_number == TAG_INTEGER))
-        {
-            p_tlv_app_data = tag_to_app_data_map[TAG_INTEGER_UNSIGNED];
-        }
-
-        if(p_tlv_app_data != NULL)
-        {
-            /* Return the found tag. */
-            *p_parsed_tag = p_tlv_app_data->tag_number;
-            status = TLV_SUCCESS;
-        }
-        else
-        {
-            /* No tag found. */
-            status = TLV_NO_TAG_FOUND;
-        }
-    }
+    /* This function will be invoked by application, when application wants to find and decode a particular tag in the TLV data buffer received over the serial communication. */
+    /* The tag to find can be a child tag. To find a child tag, recursive should be set to TRUE by the application. */
 
     /* Return status. */
     return status;
