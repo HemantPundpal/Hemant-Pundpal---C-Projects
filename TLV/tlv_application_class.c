@@ -123,9 +123,9 @@ static uint32_t create_indefinite_length_application_tlv_object(tlv_object_t * p
             case TAG_3OCTET:
             {
                 /* encode the tag. */
-                p_tlv_object->p_tlv_object_encoded_buffer[1] = (uint8_t)((tlv_tag & 0xFF00U) >> 8U);
+                p_tlv_object->p_tlv_object_encoded_buffer[1] = (uint8_t)((tlv_tag & 0x80U) >> 7U);
                 p_tlv_object->p_tlv_object_encoded_buffer[1] |= (uint8_t)(1U << SHIFT_TO_BIT_7);
-                p_tlv_object->p_tlv_object_encoded_buffer[2] = (uint8_t)(tlv_tag & 0xFFU);
+                p_tlv_object->p_tlv_object_encoded_buffer[2] = (uint8_t)(tlv_tag & 0x7FU);
             }
             break;
             default:
@@ -230,9 +230,9 @@ static uint32_t create_definite_length_application_tlv_object(tlv_object_t * p_t
             case TAG_3OCTET:
             {
                 /* encode the tag. */
-                p_tlv_object->p_tlv_object_encoded_buffer[1] = (uint8_t)((tlv_tag & 0xFF00U) >> 8U);
+                p_tlv_object->p_tlv_object_encoded_buffer[1] = (uint8_t)((tlv_tag & 0x80U) >> 7U);
                 p_tlv_object->p_tlv_object_encoded_buffer[1] |= (uint8_t)(1U << SHIFT_TO_BIT_7);
-                p_tlv_object->p_tlv_object_encoded_buffer[2] = (uint8_t)(tlv_tag & 0xFFU);
+                p_tlv_object->p_tlv_object_encoded_buffer[2] = (uint8_t)(tlv_tag & 0x7FU);
             }
             break;
             default:
