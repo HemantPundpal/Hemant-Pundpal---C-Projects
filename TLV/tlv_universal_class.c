@@ -278,8 +278,8 @@ void add_data_universal_tlv_object(tlv_object_t * p_tlv_object, const uint8_t * 
         {
             /* Add length of the tag value. */
             p_tlv_object->p_tlv_object_encoded_buffer[p_tlv_object->tlv_tag_length] = (uint8_t)LONG_LENGTH_FORM | (uint8_t)VALUE_LENGTH_2OCTET;
-            p_tlv_object->p_tlv_object_encoded_buffer[(p_tlv_object->tlv_tag_length + 1U)] = (uint8_t)((buffer_length & 0xFF00) >> 8U);
-            p_tlv_object->p_tlv_object_encoded_buffer[(p_tlv_object->tlv_tag_length + 2U)] = (uint8_t)(buffer_length & 0xFF);
+            p_tlv_object->p_tlv_object_encoded_buffer[(p_tlv_object->tlv_tag_length + 1U)] = (uint8_t)((buffer_length & 0xFF00U) >> 8U);
+            p_tlv_object->p_tlv_object_encoded_buffer[(p_tlv_object->tlv_tag_length + 2U)] = (uint8_t)(buffer_length & 0xFFU);
         }
         break;
         default:
