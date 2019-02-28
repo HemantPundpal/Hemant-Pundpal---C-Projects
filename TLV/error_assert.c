@@ -11,7 +11,7 @@
 #include "error_assert.h"
 
  /* Assert Error with / without Abort. */
-void _assert(const char *p_message, const char *fp_name, uint32_t line_number)
+void_t _assert(const char *p_message, const char *fp_name, uint32_t line_number)
 {
     fprintf(stderr, "Assert: (%s): --file: %s: --Line: (%d) \r \n", p_message, fp_name, line_number);
     fflush(stderr);

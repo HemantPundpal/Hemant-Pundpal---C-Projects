@@ -2,9 +2,9 @@
  * Name: tlv_ec.c
  *
  * Description:
- * All error check API definitions required for the tlv encoder and decoder.
+ * All error check API definitions required for the TLV encoder and decoder.
  *
- * Author: Hemant Pundpal                                   Date: 26 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 12 Feb 2019
  *
  */
 #define TLV_OBJECT_SOURCE_CODE
@@ -19,7 +19,7 @@
  */
 static uint32_t check_tag(uint32_t tag_number, uint32_t app_data_size);
 
-/* Error check for create tlv object function. */
+/* Error check for create TLV object function. */
 uint32_t create_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag, uint8_t * p_tlv_value, uint32_t value_length)
 {
     /* Check if TLV point is valid. */
@@ -59,7 +59,7 @@ uint32_t create_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag, uin
     return status;
 }
 
-/* Error check for add tlv object to tlv container function. */
+/* Error check for add TLV object to TLV container function. */
 uint32_t add_tlv_object_to_tlv_container_ec(tlv_object_t * p_container_tlv_object, tlv_object_t * p_child_tlv_object)
 {
     /* Check if the container TLV pointer is valid. */
@@ -96,7 +96,7 @@ uint32_t add_tlv_object_to_tlv_container_ec(tlv_object_t * p_container_tlv_objec
     return status;
 }
 
-/* Error check for add data to tlv object function. */
+/* Error check for add data to TLV object function. */
 uint32_t add_data_to_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag, const uint8_t * p_tlv_value, uint32_t value_length)
 {
     /* Check TLV point is valid. */
@@ -134,7 +134,7 @@ uint32_t add_data_to_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag
     return status;
 }
 
-/* Error check for parse tlv data buffer function. */
+/* Error check for parse TLV data buffer function. */
 uint32_t parse_tlv_object_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     /* Check TLV point is valid. */
@@ -161,13 +161,18 @@ uint32_t parse_tlv_object_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_
     status = parse_tlv_object(p_tlv_data_buffer, buffer_length, p_tlv_object);
 
     /* Return status. */
-    return status;;
+    return status;
 }
 
-/* Error check for search tlv encoded data object in the tlv data buffer function. */
-uint32_t tlv_search_tag_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t tag, bool_t recursive, tlv_object_t * p_tlv_object)
+/* Error check for search TLV encoded data object in the TLV data buffer function. */
+uint32_t tlv_search_tag_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t tag, bool_t b_recursive, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
+
+    if ((!p_tlv_data_buffer) || (!buffer_length) || (!tag) || (b_recursive) || (!p_tlv_object))
+    {
+        /* Suppress the warning. */
+    }
 
     return status;
 }

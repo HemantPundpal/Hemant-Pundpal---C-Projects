@@ -2,9 +2,9 @@
  * Name: tlv_app_data_ec.c
  *
  * Description:
- * All error check API definitions required for the app data layer to abstract tlv encoder and decoder.
+ * All error check API definitions required for the app data layer to abstract TLV encoder and decoder.
  *
- * Author: Hemant Pundpal                                   Date: 24 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 21 Feb 2019
  *
  */
 #define TLV_APP_DATA_SOURCE_CODE
@@ -12,14 +12,13 @@
 #include "tlv_app_data_api.h"
 #include "tlv_api.h"
 #include "tlv_app_data.h"
+#include "tlv_app_data_tag_check.h"
 #include "error_assert.h"
 
 extern tlv_app_data_t * tag_to_app_data_map[TAG_MAX];
 extern bool_t b_tlv_app_data_map_initialized;
 
-static uint32_t check_tag(uint32_t tag_number, uint32_t app_data_size);
-
-/* Error check for function to initialize and create tlv object of the app data with definite size. */
+/* Error check for function to initialize and create TLV object of the app data with definite size. */
 uint32_t tlv_init_and_create_app_data_ec(uint8_t * p_app_data_buffer, uint32_t app_data_size, uint32_t app_data_tag)
 {
     /* Check if initialized before use. */
@@ -57,7 +56,7 @@ uint32_t tlv_init_and_create_app_data_ec(uint8_t * p_app_data_buffer, uint32_t a
     return status;
 }
 
-/* Error check for function to create tlv object of the app data and add to container (parent) tlv object as a child. */
+/* Error check for function to create TLV object of the app data and add to container (parent) TLV object as a child. */
 uint32_t tlv_create_container_app_data_ec(uint32_t container_app_data_tag)
 {
     /* Check if initialized before use. */
@@ -88,7 +87,7 @@ uint32_t tlv_create_container_app_data_ec(uint32_t container_app_data_tag)
     return status;
 }
 
-/* Error check for function to add created child tlv object to container (parent) tlv object. */
+/* Error check for function to add created child TLV object to container (parent) TLV object. */
 uint32_t tlv_add_child_to_container_app_data_ec(uint32_t container_app_data_tag, uint8_t * p_app_data_buffer, uint32_t app_data_size, uint32_t child_app_data_tag)
 {
     /* Check if initialized before use. */
@@ -193,7 +192,7 @@ uint32_t tlv_add_child_tag_to_container_app_data_ec(uint32_t container_app_data_
     return status;
 }
 
-/* Error check for function to add data to tlv objects with definite size. */
+/* Error check for function to add data to TLV objects with definite size. */
 uint32_t tlv_add_data_to_app_data_ec(uint32_t app_data_tag)
 {
     /* Check if initialized before use. */
@@ -217,7 +216,7 @@ uint32_t tlv_add_data_to_app_data_ec(uint32_t app_data_tag)
     return status;
 }
 
-/* Error check for function to add data to constructed container tlv objects with indefinite size. */
+/* Error check for function to add data to constructed container TLV objects with indefinite size. */
 uint32_t tlv_add_data_to_container_app_data_ec(uint32_t container_app_data_tag, uint32_t child_app_data_tag)
 {
     /* Check if initialized before use. */
@@ -265,17 +264,17 @@ uint32_t tlv_app_data_send_ec(uint32_t tag)
     return status;
 }
 
-/* Error check for function to parse app data from TLV data buffer (first found tlv object is parsed.) */
+/* Error check for function to parse app data from TLV data buffer (first found TLV object is parsed.) */
 uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag)
 {
-    /* Check if the tlv data buffer pointer is valid. */
+    /* Check if the TLV data buffer pointer is valid. */
     assert(!p_tlv_data_buffer);
     if(!p_tlv_data_buffer)
     {
         return TLV_DATA_BUFFER_INVALID;
     }
 
-    /* Check if the tlv data buffer length is not zero. */
+    /* Check if the TLV data buffer length is not zero. */
     assert(!buffer_length);
     if(!buffer_length)
     {
@@ -296,77 +295,28 @@ uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffe
     return status;
 }
 
-/* Error check for function to search tag and parse the tlv data buffer (if recursive set to true, then search for child).*/
-uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recersive)
+/* Error check for function to search tag and parse the TLV data buffer (if recursive set to true, then search for child).*/
+uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recursive)
 {
     TLV_STATUS status = TLV_FAIL;
+
+    if ((!p_tlv_data_buffer) || (!buffer_length) || (!search_parse_tag) || (b_recursive))
+    {
+        /* Suppress the warning. */
+    }
 
     return status;
 }
 
-/* Error check for function to delete a tlv object. */
+/* Error check for function to delete a TLV object. */
 uint32_t tlv_delete_app_data_ec(uint32_t tag)
 {
     TLV_STATUS status = TLV_FAIL;
 
-    return status;
-}
-
-/* 
- * Internal function - Error check tag number.
- * Note: currently only few tags are supported thus this tag check function is sufficient.
- */
-static uint32_t check_tag(uint32_t tag_number, uint32_t app_data_size)
-{
-    /* Check any constraints that application put on the tags. */
-    switch (tag_number)
+    if (!tag)
     {
-        case TAG_INTEGER:
-        {
-            assert(!app_data_size || app_data_size > MAX_INTEGER_BYTES);
-            if (!app_data_size || app_data_size > MAX_INTEGER_BYTES)
-            {
-                return TLV_BAD_DATA_SIZE;
-            }
-        }
-        break;
-        case TAG_UTF8STRING:
-        {
-            assert(!app_data_size || app_data_size > MAX_UTF8STRING_LENGTH);
-            if (!app_data_size || app_data_size > MAX_UTF8STRING_LENGTH)
-            {
-                return TLV_BAD_DATA_SIZE;
-            }
-        }
-        break;
-        case TAG_APP_TXN_INFO:
-        {
-            /* do nothing */
-        }
-        break;
-        case TAG_APP_ADDNL_TXN_INFO:
-        {
-            /* do nothing */
-        }
-        break;
-        case TAG_CONT_SPCF_UINT_16:
-        {
-            /* do nothing */
-        }
-        break;
-        case TAG_CONT_SPCF_UINT_8:
-        {
-            /* do nothing */
-        }
-        break;
-        default:
-        {
-            /* tag not supported. */
-            uint8_t tag_invalid = 0;
-            assert(!tag_invalid);
-            return TLV_TAG_NOT_SUPPORTED;
-        }
+        /* Suppress the warning. */
     }
 
-    return TLV_SUCCESS;
+    return status;
 }

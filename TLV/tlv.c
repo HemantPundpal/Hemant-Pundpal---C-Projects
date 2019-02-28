@@ -2,7 +2,7 @@
  * Name: tlv.c
  *
  * Description:
- * All API definitions required for the tlv encoder and decoder.
+ * All API definitions required for the TLV encoder and decoder.
  *
  * Author: Hemant Pundpal                                   Date: 12 Feb 2019
  *
@@ -14,13 +14,15 @@
 #include "tlv.h"
 #include "tlv_universal_class.h"
 #include "tlv_application_class.h"
+#include "tlv_object_parser.h"
+#include "tlv_definition.h"
 
 /*
- * Function to create tlv object
+ * Function to create TLV object
  * - if buffer_length == 0; indefinite buffer length
  * - if buffer_length != 0; definite buffer length
  *
- * Note: Indefinite length is a option for only for constructed container tlv objects, not allowed for primitive tlv objects
+ * Note: Indefinite length is a option for only for constructed container TLV objects, not allowed for primitive TLV objects
  * Note: Universal class tags that can be encoded as "both" (primitive and constructed) are encoded as primitive.
  */
 uint32_t create_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, const uint8_t * p_tlv_value, uint32_t value_length)
@@ -30,22 +32,21 @@ uint32_t create_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, const 
     /* Check if it is a universal tag number */
     if (tlv_tag <= TAG_MAX_UNIVERSAL)
     {
-        /* Create universal class tlv object. */
+        /* Create universal class TLV object. */
         status = create_universal_tlv_object(p_tlv_object, tlv_tag, p_tlv_value, value_length);
     }
     else
     {
-        /* It is a application tag, create application class tlv object. */
+        /* It is a application tag, create application class TLV object. */
         status = create_application_tlv_object(p_tlv_object, tlv_tag, p_tlv_value, value_length);
     }
 
     return status;
 }
 
-
 /*
- * - Function to add tlv object to tlv container.
- * - The child TLV object can be a container, meaning a container tlv object can be added to a container tlv object as a child tlv object.
+ * - Function to add TLV object to TLV container.
+ * - The child TLV object can be a container, meaning a container TLV object can be added to a container TLV object as a child TLV object.
  * - This function does not limit the number of child objects that can be added to the container TLV object. Application can define such
  * limits for itself.
  */
@@ -53,7 +54,7 @@ uint32_t add_tlv_object_to_tlv_container(tlv_object_t * p_container_tlv_object, 
 {
     TLV_STATUS status = TLV_FAIL;
 
-    /* check if child tlv objects list is empty. */
+    /* check if child TLV objects list is empty. */
     if (p_container_tlv_object->p_tlv_child_tlv_object_list)
     {
         /* Not empty, then add to the end of the circular list */
@@ -82,19 +83,18 @@ uint32_t add_tlv_object_to_tlv_container(tlv_object_t * p_container_tlv_object, 
     return status;
 }
 
-
 /*
- * Function to add data to tlv object.
+ * Function to add data to TLV object.
  * The container TLV object can be of type primitive or constructed container.
  */
 uint32_t add_data_to_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, const uint8_t * p_tlv_value, uint32_t value_length)
 {
     TLV_STATUS status = TLV_FAIL;
 
-    /* Check the tlv object tag. */
+    /* Check the TLV object tag. */
     if (p_tlv_object->tlv_object_tag_number == tlv_tag)
     {
-        /* If tag match, Check tlv object is a container and data value length is less than or equal to max value
+        /* If tag match, Check TLV object is a container and data value length is less than or equal to max value
         length of the TLV object */
         if ((p_tlv_object->b_tlv_container_object == FALSE) && (p_tlv_object->tlv_max_object_value_length >= value_length))
         {
@@ -137,7 +137,7 @@ uint32_t add_data_to_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, c
     }
     else
     {
-        /* Check if the tlv object is a container. */
+        /* Check if the TLV object is a container. */
         if ((p_tlv_object->b_tlv_container_object == TRUE) && (p_tlv_object->tlv_child_Count != 0))
         {
             /* Get the child TLV objects of the container TLV object. */
@@ -166,21 +166,116 @@ uint32_t add_data_to_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, c
 }
 
 
-/* Function to parse tlv data buffer. */
+/* Function to parse TLV data buffer. */
 uint32_t parse_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
-    TLV_STATUS status = TLV_FAIL;
+    TLV_STATUS status = TLV_NO_TAG_FOUND;
 
-    /* THIS FUNCTION IS NOT IMPLEMENTED YET, SHOULD BE UPDATED IN NEXT 3 to 4 DAYS. */
+    for (uint32_t i = 0; i < buffer_length; i++)
+    {
+        uint8_t tag_class = (uint8_t)(p_tlv_data_buffer[i] & (uint8_t)TLV_TAG_CLASS_FILTER);
+        switch (tag_class)
+        {
+            case TAG_UNIVERSAL_PRIMITIVE:
+            {
+                /* Get the parsed TLV object. */
+                if(TLV_SUCCESS == get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object))
+                {
+                    if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
+                    {
+                        status = TLV_BAD_TAG;
+                    }
+                    else
+                    {
+                        status = TLV_SUCCESS;
+                    }
+                }
+            }
+            break;
+            case TAG_UNIVERSAL_CONSTRUCTED:
+            {
+                /* Get the parsed TLV object. */
+                status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+            }
+            break;
+            case TAG_APPL_CLS_PRIMITIVE:
+            {
+                /* Get the parsed TLV object. */
+                if (TLV_SUCCESS == get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object))
+                {
+                    if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
+                    {
+                        status = TLV_BAD_TAG;
+                    }
+                    else
+                    {
+                        status = TLV_SUCCESS;
+                    }
+                }
+            }
+            break;
+            case TAG_APPL_CLS_CONSTRUCTED:
+            {
+                /* Get the parsed TLV object. */
+                status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+            }
+            break;
+            case TAG_CS_CLS_PRIMITIVE:
+            {
+                /* Get the parsed TLV object. */
+                if (TLV_SUCCESS == get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object))
+                {
+                    if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
+                    {
+                        status = TLV_BAD_TAG;
+                    }
+                    else
+                    {
+                        status = TLV_SUCCESS;
+                    }
+                }
+            }
+            break;
+            case TAG_CS_CLS_CONSTRUCTED:
+            {
+                /* Get the parsed TLV object. */
+                status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+            }
+            break;
+            case TAG_PRIVATE_CLS_PRIMITIVE:
+            {
+                /* not supported. */
+            }
+            break;
+            case TAG_PRIVATE_CLS_CONSTRUCTED:
+            {
+                /* not supported. */
+            }
+            break;
+            default:
+            {
+                /* Do nothing. */
+            }
+            break;
+        }
+        if (TLV_SUCCESS == status)
+        {
+            /* First TLV object parsed successfully, update the TLV buffer in the TLV object. */
+            status = update_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+            /* If successfully updated, exit the search for tags. */
+            if (TLV_SUCCESS == status)
+            {
+                break;
+            }
+        }
+    }
 
-    /* This function will be invoked by app data layer, when application receives interrupt for TLV data buffer
-    received over the serial communication. */
-
+    /* Return status. */
     return status;
 }
 
-/* Function to search tlv encoded data object in the tlv data buffer. */
-uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t tag, bool_t recursive, tlv_object_t * p_tlv_object)
+/* Function to search TLV encoded data object in the TLV data buffer. */
+uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t tag, bool_t b_recursive, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
 
@@ -188,6 +283,11 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
 
     /* This function will be invoked by app data layer, when application wants to find and decode a particular tag in the TLV data buffer received over the serial communication. */
     /* The tag to find can be a child tag. To find a child tag, recursive should be set to TRUE by the app data layer. */
+
+    if ((!p_tlv_data_buffer) || (!buffer_length) || (!tag) || (b_recursive) || (!p_tlv_object))
+    {
+        /* Suppress the warning. */
+    }
 
     return status;
 }

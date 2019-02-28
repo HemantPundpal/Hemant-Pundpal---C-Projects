@@ -3,9 +3,9 @@
  *
  * Description:
  * Any platform specific definitions should be added to this file.
- * Application code need not #include this file to use the tlv API.
+ * Application code need not #include this file to use the TLV API.
  *
- * Author: Hemant Pundpal                               Date: 24 Feb 2019
+ * Author: Hemant Pundpal                               Date: 12 Feb 2019
  *
  */
 
@@ -23,15 +23,19 @@
   */
 #ifndef int8_t
 typedef char int8_t;
-#endif
+#endif /* int8_t */
 
 #ifndef int16_t
 typedef short int16_t;
-#endif
+#endif /* int16_t */
 
 #ifndef int32_t
 typedef int int32_t;
-#endif
+#endif /* int32_t */
+
+#ifndef int64_t
+typedef long long int int64_t;
+#endif /* int64_t */
 
 #ifndef uint8_t
 typedef unsigned char uint8_t;
@@ -45,9 +49,13 @@ typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 #endif /* uint32_t */
 
+#ifndef uint64_t
+typedef long long int uint64_t;
+#endif /* uint64_t */
+
 #ifndef void_t
 typedef void void_t;
-#endif /* void_t */
+#endif /* void_t_t */
 
 #ifndef bool_t
 

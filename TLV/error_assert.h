@@ -22,7 +22,7 @@ _assert(#exp, __FILE__, __LINE__);\
 #define assert(exp) 0 /* no action */
 #endif /* ERROR_ASSERT */
 
-void _assert(const char *p_message, const char *fp_name, uint32_t line_number);
+void_t _assert(const char *p_message, const char *fp_name, uint32_t line_number);
 
 #endif /* __ERROR_ASSERT_H__ */
 

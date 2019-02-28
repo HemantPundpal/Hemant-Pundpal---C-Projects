@@ -7,7 +7,7 @@
  *
  * NOTE: This code may not follow all coding standards.
  *
- * Author: Hemant Pundpal                            Date: 26 Feb 2019
+ * Author: Hemant Pundpal                            Date: 17 Feb 2019
  *
  */
 
@@ -38,10 +38,15 @@ typedef struct additional_transaction_data
 
 addnl_txn_data_t addnl_txn_info;
 
+void parse_data_received();
+
 int main()
 {
 
     tlv_initialize();
+
+    printf("DEMO FOR ENCODING TLV OBJECTS\n");
+    printf("\n");
 
     char work_string[MAX_TXN_REF_LEN + 1U] = { 'T', 'E', 'S', 'T', 'S', 'T', 'R', '\0' };
     for (uint32_t i = 0; i < (MAX_TXN_REF_LEN + 1U); i++)
@@ -208,5 +213,122 @@ int main()
     else
     {
         printf("Cannot add container added as child to a container successfully (container cannot contain itself). \n");
+    }
+
+    /* Rarsing received set of data. */
+    parse_data_received();
+
+    return 0;
+}
+
+/* String test. universal tag. */
+uint8_t tlv_buffer_0[] = { 0xC , 0x8 , 'R' , 'E' , 'C' , 'E' , 'I' , 'V' , 'E' , '\0' };
+
+/* String test. universal tag. */
+uint8_t tlv_buffer_1[] = { 0xC , 0x5 , 'R' , 'E' , 'C' , 'E' , '\0', '\0', '\0', '\0' };
+
+/* Container test. application tag. */
+uint8_t tlv_buffer_2[] = { 0x0 , 0x0 , 0x7F , 0x20 , 0x80 , 0xC , 0x8 , 0x4D , 0x4F , 0x44 , 0x49 , 
+0x46 , 0x49 , 0x44 , 0x0 , 0x2 , 0x1 , 0xFF , 0xBF , 0x81 , 0x20 , 0x1 , 0xAA , 0xBF , 0x81 , 0x1F ,
+0x2 , 0x34 , 0x12 , 0x7F , 0x21 , 0x80 , 0xC , 0xB , 0x41 , 0x44 , 0x44 , 0x54 , 0x58 , 0x4E , 0x49 , 
+0x4E , 0x46 , 0x4F , 0x0 , 0x2 , 0x2 , 0xC7 , 0xCF , 0xBF , 0x81 , 0x20 , 0x1 , 0xDD , 0xBF , 0x81 , 
+0x20 , 0x1 , 0xDD , 0xBF , 0x81 , 0x1F , 0x2 , 0xAA , 0xBD , 0x0 , 0x0 , 0x0 };
+
+/* Integer (32 bit) test. universal tag. */
+uint8_t tlv_buffer_3[] = { 0x0, 0x2, 0x1, 0xFE };
+
+/* Unsigned integer (16 bit) test. application context specific tag. */
+uint8_t tlv_buffer_4[] = { 0xBF, 0x81, 0x1F, 0x2, 0x77, 0x77 };
+
+void parse_data_received()
+{
+    /* 
+     * - This demo shows parsing of the TLV buffer
+     * - Say for example a buffer is received from the serial communication channel
+     * - Application to get the tag received using tlv_parse_app_data().
+     * - The tlv_parse_app_data() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
+     * - If the tag found of a definite length then the application is gets with tag received and associated value updated in the application variable.
+     *
+     * NOTE: If the tag found is of indefinite length (container type), then the application gets the tag received and the application should call tlv_search_parse_app_data() api
+     * to parse a child tag in the tag found with indefinite length (container type). Application can also parse the entire tag found with indefinite length (container type)
+     * with all its child tags by calling tlv_search_parse_app_data() api.
+     */
+
+    printf("DEMO FOR PARSING TLV OBJECTS\n");
+    printf("\n");
+
+     /* String test. universal tag. */
+    uint32_t tag = 0;
+    uint32_t buffer_length = sizeof(tlv_buffer_0);
+    if (TLV_SUCCESS == tlv_parse_app_data(tlv_buffer_0, buffer_length, &tag))
+    {
+        if (tag == TAG_UTF8STRING)
+        {
+            printf("tlv_buffer_0: Received TAG (%d) - TAG_UTF8STRING: ", tag);
+            uint32_t i = 0;
+            while (txn_info.s_txn_string[i] != '\0')
+            {
+                printf("%c , ", txn_info.s_txn_string[i]);
+                i++;
+            }
+        }
+        printf("\n");
+        printf("\n");
+    }
+
+    /* String test. universal tag. */
+    buffer_length = sizeof(tlv_buffer_1);
+    if (TLV_SUCCESS == tlv_parse_app_data(tlv_buffer_1, buffer_length, &tag))
+    {
+        if (tag == TAG_UTF8STRING)
+        {
+            printf("tlv_buffer_1: Received TAG (%d) - TAG_UTF8STRING: ", tag);
+            uint32_t i = 0;
+            while (txn_info.s_txn_string[i] != '\0')
+            {
+                printf("%c , ", txn_info.s_txn_string[i]);
+                i++;
+            }
+        }
+        printf("\n");
+        printf("\n");
+    }
+
+    /* Container test. application tag. */
+    buffer_length = sizeof(tlv_buffer_2);
+    if (TLV_SUCCESS == tlv_parse_app_data(tlv_buffer_2, buffer_length, &tag))
+    {
+        if (tag == TAG_APP_TXN_INFO)
+        {
+            printf("tlv_buffer_2: Received Container TAG (%d) - TAG_APP_TXN_INFO: ", tag);
+        }
+        printf("\n");
+        printf("\n");
+    }
+
+    /* Integer (32 bit) test. universal tag. */
+    buffer_length = sizeof(tlv_buffer_3);
+    if (TLV_SUCCESS == tlv_parse_app_data(tlv_buffer_3, buffer_length, &tag))
+    {
+        if (tag == TAG_INTEGER)
+        {
+            printf("tlv_buffer_3: Received TAG (%d) - TAG_INTEGER: ", tag);
+            printf("Integer value is: %d", txn_info.txn_amount);
+        }
+        printf("\n");
+        printf("\n");
+    }
+
+    /* Unsigned integer (16 bit) test. application context specific tag. */
+    buffer_length = sizeof(tlv_buffer_4);
+    if (TLV_SUCCESS == tlv_parse_app_data(tlv_buffer_4, buffer_length, &tag))
+    {
+        if (tag == TAG_CONT_SPCF_UINT_16)
+        {
+            printf("tlv_buffer_4: Received TAG (%d) - TAG_INTEGER_UNSIGNED: ", tag);
+            printf("Integer value is: %d", txn_info.txn_currency_code);
+        }
+        printf("\n");
+        printf("\n");
     }
 }

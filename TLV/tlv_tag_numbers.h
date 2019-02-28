@@ -6,7 +6,7 @@
  * Application should configure application tag numbers in this header file.
  *
  * CAUTON: Application should not modify the universal tag numbers in range 0 to 30.
- * (Universal tags will be moved to a separate header file to avoid accidental update.)
+ * (Universal tags will be moved to a separate header file to avoid_t accidental update.)
  *
  * Author: Hemant Pundpal                                   Date: 21 Feb 2019
  *
@@ -68,7 +68,7 @@
 
 /********** APPLICATION TAG NUMBERS ***********/
 /* - Application tag numbers are in range <32 to 254> (127). */
-/* - CAUTION: Application should not have tag numbers 0 to 31 to avoid conflict with universal tag numbers */
+/* - CAUTION: Application should not have tag numbers 0 to 31 to avoid_t conflict with universal tag numbers */
 /* - Application tag numbers are encoded in 2 byte or 3 byte (16 bits or 24 bits) TLV object tags. */
 
 /*
