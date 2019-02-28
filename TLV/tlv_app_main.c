@@ -215,7 +215,7 @@ int main()
         printf("Cannot add container added as child to a container successfully (container cannot contain itself). \n");
     }
 
-    /* Rarsing received set of data. */
+    /* Parsing received set of data. */
     parse_data_received();
 
     return 0;
@@ -247,7 +247,7 @@ void parse_data_received()
      * - Say for example a buffer is received from the serial communication channel
      * - Application to get the tag received using tlv_parse_app_data().
      * - The tlv_parse_app_data() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
-     * - If the tag found of a definite length then the application is gets with tag received and associated value updated in the application variable.
+     * - If the tag found of a definite length then the application gets with tag received and associated value updated in the application variable.
      *
      * NOTE: If the tag found is of indefinite length (container type), then the application gets the tag received and the application should call tlv_search_parse_app_data() api
      * to parse a child tag in the tag found with indefinite length (container type). Application can also parse the entire tag found with indefinite length (container type)
