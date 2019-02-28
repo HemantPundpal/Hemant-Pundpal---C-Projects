@@ -23,17 +23,26 @@ PHASE 1: TLV encoder and decoder V0.1.1
 Check API description below for details
 
 Upcoming updates:
-PHASE 2: TLV encoder and decoder V0.2 (in 3 to 4 days)
-- TLV decoder support for univeral (integer and UTF8 string) and application tag (application class and context specific class) numbers.
+PHASE 2 - 1: TLV encoder and decoder V0.1.9 
+- TLV parser support for univeral (integer and UTF8 string) and application tag (application class and context specific class) numbers.
 - Including app data layer abstraction for the TLV decoding.
+- Function to parse TLV data buffer (first found TLV object is parsed.)
+- The parse_tlv_object() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
+- If the tag found of a definite length then the application gets TLV object parsed with value.
+NOTE: If the tag found is of indefinite length (container type), then the caller gets the container TLV object of indefinite length and the caller application should call tlv_search_tag() api to parse a child TLV 0bjects in the container TLV object. Application can also parse the entire container TLV object of indefinite length with all its child TLV objects by calling tlv_search_tag() api.
+- NO IMPACT THE API
+
+PHASE 2 - 1: TLV encoder and decoder V0.2 (Next 3 days)
+- search and parse universal and indefinite lenght application container objects
 - Optimization of the tlv_object.
 - UPDATES WILL NOT IMPACT THE API
 
-PHASE 2: TLV encoder and decoder V0.3 (to be planned)
+
+PHASE 3: TLV encoder and decoder V0.3 (to be planned)
 - TLV encoder and decoder support for univeral tag numbers - 'TAG_REAL', TAG_SET_OF and TAG_SEQUENCE_OF.
 - UPDATES WILL NOT IMPACT THE API
 
-PHASE 3: TLV encoder and decoder V0.4 (to be planned)
+PHASE 4: TLV encoder and decoder V0.4 (to be planned)
 - Integration with serial driver and ring buffer.
 
 
@@ -81,8 +90,11 @@ tlv_app_data.h
 - Application code should not #include this file, instead tlv_app_data_api.h should be included to use the tlv app data layer abstraction for TLV encoder and decoder.
 - Application can choose to directly access TLV encoder and decoder by including tlv_api.h
 
-tlv_app_data.c
-- All tlv app data layer functions and variables are defined in this file.
+tlv_app_data_encoder.c
+- All API definitions required for the app data layer to abstract TLV encoder.
+
+tlv_app_data_parser.c
+-  All API definitions required for the app data layer to abstract parsing (decoding) of TLV encoded objects.
 
 tlv_app_data_ec.h
 - Error checking for all tlv app data layer functions.
@@ -102,16 +114,22 @@ tlv_universal_class.h
 - Has all definitions and api function declarations required for encoding and decoding universal TLV objects.
 - Application code should not #include this file, instead tlv_api.h should be included to use the TLV encoder and decoder directly in the application.
 
-tlv_universal_class.c
-- All tlv universal object component's functions and variables are defined in this file.
+tlv_universal_class_encoder.c
+- All API definitions required for the TLV universal tags encoder.
 
 tlv_application_class.h
 - This is internal component of TLV encoder and decoder.
 - Has all definitions and api function declarations required for encoding and decoding application TLV objects.
 - Application code should not #include this file, instead tlv_api.h should be included to use the TLV encoder and decoder directly in the application.
 
-tlv_application_class.c
-- All tlv application object component's functions and variables are defined in this file.
+tlv_application_class_encoder.c
+- All API definitions required for the TLV application tags encoder.
+
+tlv_object_parser.h
+- All definitions and api function declarations required for the TLV application and universal tags decoder.
+
+tlv_object_parser.c
+- All API definitions required for the TLV application and universal tags decoder.
 
 tlv_definition.h
 - All definitions and declarations required for TLV encoding / decoding and associated constraints.
