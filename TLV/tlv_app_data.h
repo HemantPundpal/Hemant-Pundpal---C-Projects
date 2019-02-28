@@ -68,6 +68,12 @@ uint32_t tlv_app_data_send(uint32_t tag);
 /*
  * - Function to parse app data from TLV data buffer (first found TLV object is parsed.)
  * - The parsed TLV object data will be auto updated to the application variables.
+ * - The tlv_parse_app_data() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
+ * - If the tag found of a definite length then the application is gets with tag received and associated value updated in the application variable.
+ *
+ * NOTE: If the tag found is of indefinite lenght (container type), then the application gets the tag received and the application should call tlv_search_parse_app_data() api
+ * to parse a child tag in the tag found with indefinite length (container type). Application can also parse the entire tag found with indefinite lenght (container type)
+ * with all its child tags by calling tlv_search_parse_app_data() api.
  */
 uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag);
 

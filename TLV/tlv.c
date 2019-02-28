@@ -165,8 +165,15 @@ uint32_t add_data_to_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, c
     return status;
 }
 
-
-/* Function to parse TLV data buffer. */
+/*
+ * - Function to parse TLV data buffer (first found TLV object is parsed.)
+ * - The parse_tlv_object() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
+ * - If the tag found of a definite length then the application gets TLV object parsed with value.
+ *
+ * NOTE: If the tag found is of indefinite length (container type), then the caller gets the container TLV object of indefinite length and the caller application
+ * should call tlv_search_tag() api to parse a child TLV 0bjects in the container TLV object. Application can also parse the entire container TLV object of indefinite
+ * length with all its child TLV objects by calling tlv_search_tag() api.
+ */
 uint32_t parse_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_NO_TAG_FOUND;

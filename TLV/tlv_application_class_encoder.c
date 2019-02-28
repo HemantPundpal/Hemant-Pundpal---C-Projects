@@ -2,7 +2,7 @@
  * Name: tlv_application_class_encoder.c
  *
  * Description:
- * All API definitions required for the TLV application tags encoder and decoder.
+ * All API definitions required for the TLV application tags encoder.
  *
  * Author: Hemant Pundpal                                   Date: 21 Feb 2019
  *
