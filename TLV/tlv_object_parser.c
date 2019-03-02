@@ -11,6 +11,7 @@
 #define TLV_APP_DATA_SOURCE_CODE
 
 #include "tlv_api.h"
+#include "tlv_universal_class.h"
 #include "tlv_application_class.h"
 #include "tlv_definition.h"
 
