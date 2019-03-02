@@ -20,8 +20,39 @@ static uint32_t parse_tlv_object_tag(const uint8_t * p_tlv_data_buffer, uint32_t
 /* Parse application TLV object's lenght. */
 static uint32_t parse_tlv_object_lenght(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
 
-/* Get parsed TLV object for the found tag. */
-uint32_t get_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+/* Get parsed primitive TLV object for the found tag. */
+uint32_t get_parsed_tlv_object_primitive(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+{
+    TLV_STATUS status = TLV_FAIL;
+
+    /* First get the tag number. */
+    status = parse_tlv_object_tag(p_tlv_data_buffer, buffer_length, p_tlv_object);
+
+    if (TLV_SUCCESS == status)
+    {
+        /* Now get the length. */
+        status = parse_tlv_object_lenght(p_tlv_data_buffer, buffer_length, p_tlv_object);
+    }
+
+    if (TLV_SUCCESS == status)
+    {
+        /* check is the primitive tlv object constraints are met. */
+        if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
+        {
+            status = TLV_BAD_TAG;
+        }
+        else
+        {
+            status = TLV_SUCCESS;
+        }
+    }
+
+    /* Return status. */
+    return status;
+}
+
+/* Get parsed primitive TLV object for the found tag. */
+uint32_t get_parsed_tlv_object_constructed(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
 
