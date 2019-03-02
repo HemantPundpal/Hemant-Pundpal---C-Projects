@@ -185,68 +185,38 @@ uint32_t parse_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_len
         {
             case TAG_UNIVERSAL_PRIMITIVE:
             {
-                /* Get the parsed TLV object. */
-                if(TLV_SUCCESS == get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object))
-                {
-                    if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
-                    {
-                        status = TLV_BAD_TAG;
-                    }
-                    else
-                    {
-                        status = TLV_SUCCESS;
-                    }
-                }
+                /* Get the parsed primitive TLV object. */
+                status = get_parsed_tlv_object_primitive(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
             }
             break;
             case TAG_UNIVERSAL_CONSTRUCTED:
             {
-                /* Get the parsed TLV object. */
-                status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+                /* Get the parsed constructed TLV object. */
+                status = get_parsed_tlv_object_constructed(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
             }
             break;
             case TAG_APPL_CLS_PRIMITIVE:
             {
-                /* Get the parsed TLV object. */
-                if (TLV_SUCCESS == get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object))
-                {
-                    if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
-                    {
-                        status = TLV_BAD_TAG;
-                    }
-                    else
-                    {
-                        status = TLV_SUCCESS;
-                    }
-                }
+                /* Get the parsed primitive TLV object. */
+                status = get_parsed_tlv_object_primitive(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
             }
             break;
             case TAG_APPL_CLS_CONSTRUCTED:
             {
-                /* Get the parsed TLV object. */
-                status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+                /* Get the parsed constructed TLV object. */
+                status = get_parsed_tlv_object_constructed(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
             }
             break;
             case TAG_CS_CLS_PRIMITIVE:
             {
-                /* Get the parsed TLV object. */
-                if (TLV_SUCCESS == get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object))
-                {
-                    if ((p_tlv_object->b_tlv_container_object == TRUE) || (p_tlv_object->b_tlv_object_length_definite == FALSE))
-                    {
-                        status = TLV_BAD_TAG;
-                    }
-                    else
-                    {
-                        status = TLV_SUCCESS;
-                    }
-                }
+                /* Get the parsed primitive TLV object. */
+                status = get_parsed_tlv_object_primitive(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
             }
             break;
             case TAG_CS_CLS_CONSTRUCTED:
             {
-                /* Get the parsed TLV object. */
-                status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+                /* Get the parsed constructed TLV object. */
+                status = get_parsed_tlv_object_constructed(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
             }
             break;
             case TAG_PRIVATE_CLS_PRIMITIVE:
