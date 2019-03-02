@@ -45,40 +45,30 @@ uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_l
             tlv_app_data_t * p_tlv_app_data = NULL;
             status = check_parsed_tlv_object_app_data(tlv_parsed_object, &p_tlv_app_data);
 
-            if ((status == TLV_SUCCESS) &&
-                (p_tlv_app_data != NULL) &&
-                (p_tlv_app_data->b_container == tlv_parsed_object->b_tlv_container_object))
+            if (status == TLV_SUCCESS)
             {
                 copy_tlv_encoded_buffer(tlv_parsed_object, p_tlv_app_data);
                 switch (p_tlv_app_data->tag_number)
                 {
-                case TAG_INTEGER:
-                {
-                    update_app_data_integer(p_tlv_app_data);
-                }
-                break;
-                case TAG_INTEGER_UNSIGNED:
-                {
-                    update_app_data(p_tlv_app_data);
-                }
-                break;
-                default:
-                {
-                    /* For rest just copy all the value octets in the app data. */
-                    update_app_data(p_tlv_app_data);
-                }
+                    case TAG_INTEGER:
+                    {
+                        update_app_data_integer(p_tlv_app_data);
+                    }
+                    break;
+                    case TAG_INTEGER_UNSIGNED:
+                    {
+                        update_app_data(p_tlv_app_data);
+                    }
+                    break;
+                    default:
+                    {
+                        /* For rest just copy all the value octets in the app data. */
+                        update_app_data(p_tlv_app_data);
+                    }
                 }
 
                 /* Return the found tag. */
                 *p_parsed_tag = p_tlv_app_data->tag_number;
-            }
-            else
-            {
-                if (status == TLV_SUCCESS)
-                {
-                    /* tag found but, miss match of container type. */
-                    status = TLV_NO_TAG_FOUND;
-                }
             }
             /* Free the TLV buffer. */
             free(tlv_parsed_object->p_tlv_object_encoded_buffer);
@@ -130,6 +120,14 @@ static uint32_t check_parsed_tlv_object_app_data(tlv_object_t * p_tlv_parsed_obj
         {
             /* No tag found. May be not created yet. */
             status = TLV_NO_TAG_FOUND;
+        }
+        else
+        {
+            if ((!((p_tlv_parsed_object->b_tlv_container_object == TRUE) && ((*p_tlv_app_data)->b_container == TRUE))) &&
+                (!((p_tlv_parsed_object->b_tlv_container_object == FALSE) && ((*p_tlv_app_data)->b_container == FALSE))))
+            {
+                status = TLV_NO_TAG_FOUND;
+            }
         }
     }
 
