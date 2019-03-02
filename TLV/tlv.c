@@ -180,61 +180,8 @@ uint32_t parse_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_len
 
     for (uint32_t i = 0; i < buffer_length; i++)
     {
-        uint8_t tag_class = (uint8_t)(p_tlv_data_buffer[i] & (uint8_t)TLV_TAG_CLASS_FILTER);
-        switch (tag_class)
-        {
-            case TAG_UNIVERSAL_PRIMITIVE:
-            {
-                /* Get the parsed primitive TLV object. */
-                status = get_parsed_tlv_object_primitive(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
-            }
-            break;
-            case TAG_UNIVERSAL_CONSTRUCTED:
-            {
-                /* Get the parsed constructed TLV object. */
-                status = get_parsed_tlv_object_constructed(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
-            }
-            break;
-            case TAG_APPL_CLS_PRIMITIVE:
-            {
-                /* Get the parsed primitive TLV object. */
-                status = get_parsed_tlv_object_primitive(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
-            }
-            break;
-            case TAG_APPL_CLS_CONSTRUCTED:
-            {
-                /* Get the parsed constructed TLV object. */
-                status = get_parsed_tlv_object_constructed(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
-            }
-            break;
-            case TAG_CS_CLS_PRIMITIVE:
-            {
-                /* Get the parsed primitive TLV object. */
-                status = get_parsed_tlv_object_primitive(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
-            }
-            break;
-            case TAG_CS_CLS_CONSTRUCTED:
-            {
-                /* Get the parsed constructed TLV object. */
-                status = get_parsed_tlv_object_constructed(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
-            }
-            break;
-            case TAG_PRIVATE_CLS_PRIMITIVE:
-            {
-                /* not supported. */
-            }
-            break;
-            case TAG_PRIVATE_CLS_CONSTRUCTED:
-            {
-                /* not supported. */
-            }
-            break;
-            default:
-            {
-                /* Do nothing. */
-            }
-            break;
-        }
+        status = get_parsed_tlv_object(&p_tlv_data_buffer[i], (buffer_length - i), p_tlv_object);
+
         if (TLV_SUCCESS == status)
         {
             /* First TLV object parsed successfully, update the TLV buffer in the TLV object. */
