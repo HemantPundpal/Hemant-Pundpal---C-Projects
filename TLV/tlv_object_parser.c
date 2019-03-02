@@ -21,7 +21,78 @@ static uint32_t parse_tlv_object_tag(const uint8_t * p_tlv_data_buffer, uint32_t
 static uint32_t parse_tlv_object_lenght(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
 
 /* Get parsed primitive TLV object for the found tag. */
-uint32_t get_parsed_tlv_object_primitive(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+static uint32_t get_parsed_tlv_object_primitive(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
+
+/* Get parsed primitive TLV object for the found tag. */
+static uint32_t get_parsed_tlv_object_constructed(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
+
+/* Get parsed TLV object for the found tag. */
+uint32_t get_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+{
+    TLV_STATUS status = TLV_FAIL;
+
+    uint8_t tag_class = (uint8_t)(*p_tlv_data_buffer & (uint8_t)TLV_TAG_CLASS_FILTER);
+    switch (tag_class)
+    {
+        case TAG_UNIVERSAL_PRIMITIVE:
+        {
+            /* Get the parsed primitive TLV object. */
+            status = get_parsed_tlv_object_primitive(p_tlv_data_buffer, buffer_length, p_tlv_object);
+        }
+        break;
+        case TAG_UNIVERSAL_CONSTRUCTED:
+        {
+            /* Get the parsed constructed TLV object. */
+            status = get_parsed_tlv_object_constructed(p_tlv_data_buffer, buffer_length, p_tlv_object);
+        }
+        break;
+        case TAG_APPL_CLS_PRIMITIVE:
+        {
+            /* Get the parsed primitive TLV object. */
+            status = get_parsed_tlv_object_primitive(p_tlv_data_buffer, buffer_length, p_tlv_object);
+        }
+        break;
+        case TAG_APPL_CLS_CONSTRUCTED:
+        {
+            /* Get the parsed constructed TLV object. */
+            status = get_parsed_tlv_object_constructed(p_tlv_data_buffer, buffer_length, p_tlv_object);
+        }
+        break;
+        case TAG_CS_CLS_PRIMITIVE:
+        {
+            /* Get the parsed primitive TLV object. */
+            status = get_parsed_tlv_object_primitive(p_tlv_data_buffer, buffer_length, p_tlv_object);
+        }
+        break;
+        case TAG_CS_CLS_CONSTRUCTED:
+        {
+            /* Get the parsed constructed TLV object. */
+            status = get_parsed_tlv_object_constructed(p_tlv_data_buffer, buffer_length, p_tlv_object);
+        }
+        break;
+        case TAG_PRIVATE_CLS_PRIMITIVE:
+        {
+            /* not supported. */
+        }
+        break;
+        case TAG_PRIVATE_CLS_CONSTRUCTED:
+        {
+            /* not supported. */
+        }
+        break;
+        default:
+        {
+            /* Do nothing. */
+        }
+        break;
+    }
+
+    /* Return status. */
+    return status;
+}
+
+/* Get parsed primitive TLV object for the found tag. */
+static uint32_t get_parsed_tlv_object_primitive(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
 
@@ -52,7 +123,7 @@ uint32_t get_parsed_tlv_object_primitive(const uint8_t * p_tlv_data_buffer, uint
 }
 
 /* Get parsed primitive TLV object for the found tag. */
-uint32_t get_parsed_tlv_object_constructed(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+static uint32_t get_parsed_tlv_object_constructed(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
 
@@ -132,7 +203,7 @@ uint32_t update_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t bu
 }
 
 /* Parse application TLV object's tag. */
-uint32_t parse_tlv_object_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+static uint32_t parse_tlv_object_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
 
@@ -184,7 +255,7 @@ uint32_t parse_tlv_object_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer
 }
 
 /* Parse application TLV object's length. */
-uint32_t parse_tlv_object_lenght(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+static uint32_t parse_tlv_object_lenght(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
     TLV_STATUS status = TLV_FAIL;
     uint32_t length_octets = 0U;
