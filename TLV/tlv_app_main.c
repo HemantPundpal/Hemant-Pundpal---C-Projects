@@ -7,7 +7,7 @@
  *
  * NOTE: This code may not follow all coding standards.
  *
- * Author: Hemant Pundpal                            Date: 17 Feb 2019
+ * Author: Hemant Pundpal                            Date: 03 Mar 2019
  *
  */
 
@@ -426,7 +426,7 @@ void parse_data_received()
         printf("Integer value is: %d \n", txn_info.txn_currency_code);
         printf("Integer value is: %d \n", txn_info.txn_type);
 
-
+        i = 0;
         while (addnl_txn_info.s_txn_tax_info[i] != '\0')
         {
             printf("%c , ", addnl_txn_info.s_txn_tax_info[i]);
