@@ -363,7 +363,7 @@ void parse_data_received()
     printf("\n");
     printf("\n");
 
-    /* Search and decode a conatiner (constructed) in a container with recursive = FALSE */
+    /* Search and decode a container (constructed) in a container with recursive = FALSE */
     buffer_length = sizeof(tlv_buffer_2);
     tag = TAG_APP_ADDNL_TXN_INFO;
     if (TLV_SUCCESS == tlv_search_parse_app_data(tlv_buffer_2, buffer_length, tag, FALSE))
@@ -387,7 +387,7 @@ void parse_data_received()
     }
     printf("\n");
     printf("\n");
-    /* Search and decode a conatiner (constructed) in a container with recursive = TRUE */
+    /* Search and decode a container (constructed) in a container with recursive = TRUE */
     if (TLV_SUCCESS == tlv_search_parse_app_data(tlv_buffer_2, buffer_length, tag, TRUE))
     {
         printf("Recursive set to TRUE:\n");
@@ -407,7 +407,7 @@ void parse_data_received()
     printf("\n");
     printf("\n");
 
-    /* Search and decode a conatiner containing container and primitives with recursive = FALSE */
+    /* Search and decode a container (@ root level in TLV buffer) containing container and primitives with recursive = FALSE */
     buffer_length = sizeof(tlv_buffer_5);
     tag = TAG_APP_TXN_INFO;
     if (TLV_SUCCESS == tlv_search_parse_app_data(tlv_buffer_5, buffer_length, tag, FALSE))
