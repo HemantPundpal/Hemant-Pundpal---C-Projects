@@ -289,7 +289,23 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
                     status = tlv_search_tag(&p_tlv_data_buffer[buffer_index], (buffer_length - buffer_index), p_search_tlv_child_object->tlv_object_tag_number, b_recursive, p_search_tlv_child_object);
 
                     /* Move to the next child in the TLV data buffer. */
-                    buffer_index += p_search_tlv_child_object->tlv_curr_encoded_object_length;
+                    if (p_search_tlv_child_object->b_tlv_container_object)
+                    {
+                        tlv_object_t * p_temp_tlv_child_of_child_object = p_search_tlv_child_object->p_tlv_child_tlv_object_list;
+                        uint32_t temp_buffer_index = p_search_tlv_child_object->tlv_curr_encoded_object_length;
+
+                        for (uint32_t k = 0; k < p_search_tlv_child_object->tlv_child_Count; k++)
+                        {
+                            temp_buffer_index += p_temp_tlv_child_of_child_object->tlv_curr_encoded_object_length;
+                            p_temp_tlv_child_of_child_object = p_temp_tlv_child_of_child_object->p_child_tlv_object_next;
+                        }
+
+                        buffer_index += temp_buffer_index;
+                    }
+                    else
+                    {
+                        buffer_index += p_search_tlv_child_object->tlv_curr_encoded_object_length;
+                    }
                     p_search_tlv_child_object = p_search_tlv_child_object->p_child_tlv_object_next;
                 }
             }
