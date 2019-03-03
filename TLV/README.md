@@ -22,7 +22,6 @@ PHASE 1: TLV encoder and decoder V0.1.1
 
 Check API description below for details
 
-Upcoming updates:
 PHASE 2 - 1: TLV encoder and decoder V0.1.9 
 - TLV parser support for univeral (integer and UTF8 string) and application tag (application class and context specific class) numbers.
 - Including app data layer abstraction for the TLV decoding.
@@ -30,14 +29,16 @@ PHASE 2 - 1: TLV encoder and decoder V0.1.9
 - The parse_tlv_object() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
 - If the tag found of a definite length then the application gets TLV object parsed with value.
 NOTE: If the tag found is of indefinite length (container type), then the caller gets the container TLV object of indefinite length and the caller application should call tlv_search_tag() api to parse a child TLV 0bjects in the container TLV object. Application can also parse the entire container TLV object of indefinite length with all its child TLV objects by calling tlv_search_tag() api.
-- NO IMPACT THE API
+- NO IMPACT TO THE API
 
-PHASE 2 - 1: TLV encoder and decoder V0.2 (Next 3 days)
+PHASE 2 - 1: TLV encoder and decoder V0.2
 - search and parse universal and indefinite lenght application container objects
 - Optimization of the tlv_object.
-- UPDATES WILL NOT IMPACT THE API
+- NO IMPACT TO THE API
 
+< NOTE: There will be minor updated as 0.2.1 and 0.2.2 with improved code and testing. >
 
+Upcoming updates:
 PHASE 3: TLV encoder and decoder V0.3 (to be planned)
 - TLV encoder and decoder support for univeral tag numbers - 'TAG_REAL', TAG_SET_OF and TAG_SEQUENCE_OF.
 - UPDATES WILL NOT IMPACT THE API
