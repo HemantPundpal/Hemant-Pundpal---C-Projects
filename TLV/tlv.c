@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the TLV encoder and decoder.
  *
- * Author: Hemant Pundpal                                   Date: 12 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 02 Mar 2019
  *
  */
 
@@ -201,18 +201,104 @@ uint32_t parse_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_len
 /* Function to search TLV encoded data object in the TLV data buffer. */
 uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t tag, bool_t b_recursive, tlv_object_t * p_tlv_object)
 {
-    TLV_STATUS status = TLV_FAIL;
+    TLV_STATUS status = TLV_NO_TAG_FOUND;
+    tlv_object_t work_tlv_object;
+    uint32_t buffer_index = 0;
 
-    /* THIS FUNCTION IS NOT IMPLEMENTED YET, SHOULD BE UPDATED IN NEXT 3 to 4 DAYS. */
-
-    /* This function will be invoked by app data layer, when application wants to find and decode a particular tag in the TLV data buffer received over the serial communication. */
-    /* The tag to find can be a child tag. To find a child tag, recursive should be set to TRUE by the app data layer. */
-
-    if ((!p_tlv_data_buffer) || (!buffer_length) || (!tag) || (b_recursive) || (!p_tlv_object))
+    /* Loop through the buffer to seach the tag and decode the TLV object. */
+    for (buffer_index = 0; buffer_index < buffer_length;)
     {
-        /* Suppress the warning. */
+        status = get_parsed_tlv_object(&p_tlv_data_buffer[buffer_index], (buffer_length - buffer_index), &work_tlv_object);
+
+        if (TLV_SUCCESS == status)
+        {
+            /* Check if match found. */
+            if (((work_tlv_object.tlv_object_tag_number == tag) &&
+                (work_tlv_object.tlv_tag_length == p_tlv_object->tlv_tag_length) &&
+                (work_tlv_object.tlv_curr_encoded_object_length <= p_tlv_object->tlv_max_encoded_object_length) &&
+                (work_tlv_object.tlv_curr_object_value_length <= p_tlv_object->tlv_max_object_value_length) &&
+                (((p_tlv_object->b_tlv_container_object == TRUE) && (work_tlv_object.b_tlv_container_object == TRUE)) ||
+                ((p_tlv_object->b_tlv_container_object == FALSE) && (work_tlv_object.b_tlv_container_object == FALSE))) &&
+                (((p_tlv_object->b_tlv_object_length_definite == TRUE) && (work_tlv_object.b_tlv_object_length_definite == TRUE)) ||
+                ((p_tlv_object->b_tlv_object_length_definite == FALSE) && (work_tlv_object.b_tlv_object_length_definite == FALSE)))))
+            {
+                p_tlv_object->tlv_curr_encoded_object_length = work_tlv_object.tlv_curr_encoded_object_length;
+                p_tlv_object->tlv_curr_object_value_length = work_tlv_object.tlv_curr_object_value_length;
+            }
+            else
+            {
+                /* Not matching, so jump to next TLV encoded object in the TLV encoded buffer. */
+                if (work_tlv_object.b_tlv_container_object == TRUE)
+                {
+                    if (b_recursive)
+                    {
+                        buffer_index += work_tlv_object.tlv_curr_encoded_object_length;
+                    }
+                    else
+                    {
+                        if (work_tlv_object.b_tlv_object_length_definite == TRUE)
+                        {
+                            buffer_index += (work_tlv_object.tlv_curr_encoded_object_length + work_tlv_object.tlv_curr_object_value_length);
+                        }
+                        else
+                        {
+                            buffer_index += work_tlv_object.tlv_curr_encoded_object_length;
+                            while (p_tlv_data_buffer[buffer_index] != 0x0)
+                            {
+                                if (buffer_index < buffer_length)
+                                {
+                                    buffer_index++;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    buffer_index += work_tlv_object.tlv_curr_encoded_object_length;
+                }
+
+                /* Tag is not found yet. */
+                status = TLV_NO_TAG_FOUND;
+            }
+        }
+        else
+        {
+            /* Point to next octet in the TLV data buffer. */
+            buffer_index++;
+        }
+
+        if (TLV_SUCCESS == status)
+        {
+            /* Update the searched TLV object. */
+            status = update_searched_tlv_object(&p_tlv_data_buffer[buffer_index], (buffer_length - buffer_index), p_tlv_object);
+
+            if (p_tlv_object->b_tlv_container_object == TRUE)
+            {
+                /* Searched TLV object is a container, so decode and update all the child TLV objects. */
+                buffer_index += p_tlv_object->tlv_curr_encoded_object_length;
+
+                tlv_object_t * p_search_tlv_child_object = p_tlv_object->p_tlv_child_tlv_object_list;
+                for (uint32_t y = 0; y < p_tlv_object->tlv_child_Count; y++)
+                {
+                    /* This is a recursive call, please take care of depth and when modifying. */
+                    status = tlv_search_tag(&p_tlv_data_buffer[buffer_index], (buffer_length - buffer_index), p_search_tlv_child_object->tlv_object_tag_number, b_recursive, p_search_tlv_child_object);
+
+                    /* Move to the next child in the TLV data buffer. */
+                    buffer_index += p_search_tlv_child_object->tlv_curr_encoded_object_length;
+                    p_search_tlv_child_object = p_search_tlv_child_object->p_child_tlv_object_next;
+                }
+            }
+            /* Tag searched and TLV object udpated. */
+            break;
+        }
     }
 
+    /* Return status */
     return status;
 }
 

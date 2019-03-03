@@ -167,13 +167,29 @@ uint32_t parse_tlv_object_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_
 /* Error check for search TLV encoded data object in the TLV data buffer function. */
 uint32_t tlv_search_tag_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t tag, bool_t b_recursive, tlv_object_t * p_tlv_object)
 {
-    TLV_STATUS status = TLV_FAIL;
-
-    if ((!p_tlv_data_buffer) || (!buffer_length) || (!tag) || (b_recursive) || (!p_tlv_object))
+    /* Check TLV point is valid. */
+    assert(!p_tlv_object);
+    if (!p_tlv_object)
     {
-        /* Suppress the warning. */
+        return TLV_OBJECT_INVALID_PTR;
     }
 
+    assert(tag != p_tlv_object->tlv_object_tag_number);
+    if (tag != p_tlv_object->tlv_object_tag_number)
+    {
+        return TLV_OBJECT_INVALID_PTR;
+    }
+
+    assert(!p_tlv_data_buffer);
+    if (!p_tlv_data_buffer)
+    {
+        return TLV_DATA_BUFFER_INVALID;
+    }
+
+    TLV_STATUS status = TLV_FAIL;
+    status = tlv_search_tag(p_tlv_data_buffer, buffer_length, tag, b_recursive, p_tlv_object);
+
+    /* Return status. */
     return status;
 }
 

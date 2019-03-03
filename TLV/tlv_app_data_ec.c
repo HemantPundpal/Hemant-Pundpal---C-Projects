@@ -298,13 +298,31 @@ uint32_t tlv_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffe
 /* Error check for function to search tag and parse the TLV data buffer (if recursive set to true, then search for child).*/
 uint32_t tlv_search_parse_app_data_ec(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recursive)
 {
-    TLV_STATUS status = TLV_FAIL;
-
-    if ((!p_tlv_data_buffer) || (!buffer_length) || (!search_parse_tag) || (b_recursive))
+    /* Check if the TLV data buffer pointer is valid. */
+    assert(!p_tlv_data_buffer);
+    if (!p_tlv_data_buffer)
     {
-        /* Suppress the warning. */
+        return TLV_DATA_BUFFER_INVALID;
     }
 
+    /* Check if the TLV data buffer length is not zero. */
+    assert(!buffer_length);
+    if (!buffer_length)
+    {
+        return TLV_BAD_BUFFER_LENGTH;
+    }
+
+    /* Check if the TLV tag is not created already. */
+    assert(tag_to_app_data_map[search_parse_tag] == NULL);
+    if (tag_to_app_data_map[search_parse_tag] == NULL)
+    {
+        return TLV_TAG_NOT_CREATED;
+    }
+
+    TLV_STATUS status = TLV_FAIL;
+    status = tlv_search_parse_app_data(p_tlv_data_buffer, buffer_length, search_parse_tag, b_recursive);
+
+    /* Return status. */
     return status;
 }
 

@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the TLV application and universal tags decoder.
  *
- * Author: Hemant Pundpal                                   Date: 27 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 03 Mar 2019
  *
  */
 
@@ -18,7 +18,7 @@
 /* Parse application TLV object's tag. */
 static uint32_t parse_tlv_object_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
 
-/* Parse application TLV object's lenght. */
+/* Parse application TLV object's length. */
 static uint32_t parse_tlv_object_lenght(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
 
 /* Get parsed primitive TLV object for the found tag. */
@@ -92,6 +92,115 @@ uint32_t get_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffe
     return status;
 }
 
+/* Update parsed TLV object. */
+uint32_t update_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+{
+    TLV_STATUS status = TLV_FAIL;
+
+    /* Update TLV encoded buffer in the TLV object. */
+    if (p_tlv_object->tlv_curr_encoded_object_length <= buffer_length)
+    {
+        /* Allocate memory for the TLV encoded buffer. */
+        p_tlv_object->p_tlv_object_encoded_buffer = NULL;
+        p_tlv_object->p_tlv_object_encoded_buffer = (uint8_t*)calloc(p_tlv_object->tlv_curr_encoded_object_length, sizeof(uint8_t));
+        if (p_tlv_object->p_tlv_object_encoded_buffer)
+        {
+            /* If successful copy the TLV encoded buffer. */
+            for (uint32_t i = 0; i < p_tlv_object->tlv_curr_encoded_object_length; i++)
+            {
+                p_tlv_object->p_tlv_object_encoded_buffer[i] = p_tlv_data_buffer[i];
+            }
+
+            /* store the start of value buffer. */
+            if (p_tlv_object->b_tlv_container_object == FALSE)
+            {
+                uint32_t value_index = ((p_tlv_object->tlv_curr_encoded_object_length) - (p_tlv_object->tlv_curr_object_value_length));
+                p_tlv_object->p_tlv_value_buffer = &(p_tlv_object->p_tlv_object_encoded_buffer[value_index]);
+            }
+            else
+            {
+                p_tlv_object->p_tlv_value_buffer = NULL;
+            }
+
+            status = TLV_SUCCESS;
+        }
+        else
+        {
+            p_tlv_object->tlv_tag_length = 0U;
+            p_tlv_object->tlv_object_tag_number = 0;
+            p_tlv_object->tlv_curr_object_value_length = 0U;
+            p_tlv_object->tlv_curr_encoded_object_length = 0U;
+            p_tlv_object->b_tlv_container_object = FALSE;
+            p_tlv_object->b_tlv_object_length_definite = FALSE;
+
+            /* Could not allocate memory. */
+            status = TLV_NO_MEMORY;
+        }
+    }
+    else
+    {
+        p_tlv_object->tlv_tag_length = 0U;
+        p_tlv_object->tlv_object_tag_number = 0;
+        p_tlv_object->tlv_curr_object_value_length = 0U;
+        p_tlv_object->tlv_curr_encoded_object_length = 0U;
+        p_tlv_object->b_tlv_container_object = FALSE;
+        p_tlv_object->b_tlv_object_length_definite = FALSE;
+
+        status = TLV_BAD_BUFFER_LENGTH;
+    }
+
+    /* Initialize the attributes of the TLV object. */
+    p_tlv_object->p_child_tlv_object_next = NULL;
+    p_tlv_object->p_child_tlv_object_previous = NULL;
+    p_tlv_object->p_tlv_child_tlv_object_list = NULL;
+    p_tlv_object->tlv_child_Count = 0;
+    p_tlv_object->tlv_max_encoded_object_length = 0;
+    p_tlv_object->tlv_max_length_of_endcoded_value_length = 0;
+    p_tlv_object->tlv_max_object_value_length = 0;
+
+    /* Return status. */
+    return status;
+}
+
+/* Update searched TLV object. */
+uint32_t update_searched_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
+{
+    TLV_STATUS status = TLV_FAIL;
+
+    /* Update TLV encoded buffer in the TLV object. */
+    if (p_tlv_object->tlv_curr_encoded_object_length <= buffer_length)
+    {
+        if (p_tlv_object->p_tlv_object_encoded_buffer)
+        {
+            /* If successful copy the TLV encoded buffer. */
+            for (uint32_t i = 0; i < p_tlv_object->tlv_curr_encoded_object_length; i++)
+            {
+                p_tlv_object->p_tlv_object_encoded_buffer[i] = p_tlv_data_buffer[i];
+            }
+
+            /* store the start of value buffer. */
+            if (p_tlv_object->b_tlv_container_object == FALSE)
+            {
+                uint32_t value_index = ((p_tlv_object->tlv_curr_encoded_object_length) - (p_tlv_object->tlv_curr_object_value_length));
+                p_tlv_object->p_tlv_value_buffer = &(p_tlv_object->p_tlv_object_encoded_buffer[value_index]);
+            }
+            else
+            {
+                p_tlv_object->p_tlv_value_buffer = NULL;
+            }
+
+            status = TLV_SUCCESS;
+        }
+    }
+    else
+    {
+        status = TLV_BAD_BUFFER_LENGTH;
+    }
+
+    /* Return status. */
+    return status;
+}
+
 /* Get parsed primitive TLV object for the found tag. */
 static uint32_t get_parsed_tlv_object_primitive(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
 {
@@ -136,68 +245,6 @@ static uint32_t get_parsed_tlv_object_constructed(const uint8_t * p_tlv_data_buf
         /* Now get the length. */
         status = parse_tlv_object_lenght(p_tlv_data_buffer, buffer_length, p_tlv_object);
     }
-
-    /* Return status. */
-    return status;
-}
-
-/* Update parsed TLV object. */
-uint32_t update_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object)
-{
-    TLV_STATUS status = TLV_FAIL;
-
-    /* Update TLV encoded buffer in the TLV object. */
-    if (p_tlv_object->tlv_curr_encoded_object_length <= buffer_length)
-    {
-        /* Allocate memory for the TLV encoded buffer. */
-        p_tlv_object->p_tlv_object_encoded_buffer = NULL;
-        p_tlv_object->p_tlv_object_encoded_buffer = (uint8_t*)calloc(p_tlv_object->tlv_curr_encoded_object_length, sizeof(uint8_t));
-        if (p_tlv_object->p_tlv_object_encoded_buffer)
-        {
-            /* If successful copy the TLV encoded buffer. */
-            for (uint32_t i = 0; i < p_tlv_object->tlv_curr_encoded_object_length; i++)
-            {
-                p_tlv_object->p_tlv_object_encoded_buffer[i] = p_tlv_data_buffer[i];
-            }
-            /* store the start of value buffer. */
-            uint32_t value_index = ((p_tlv_object->tlv_curr_encoded_object_length) - (p_tlv_object->tlv_curr_object_value_length));
-            p_tlv_object->p_tlv_value_buffer = &(p_tlv_object->p_tlv_object_encoded_buffer[value_index]);
-
-            status = TLV_SUCCESS;
-        }
-        else
-        {
-            p_tlv_object->tlv_tag_length = 0U;
-            p_tlv_object->tlv_object_tag_number = 0;
-            p_tlv_object->tlv_curr_object_value_length = 0U;
-            p_tlv_object->tlv_curr_encoded_object_length = 0U;
-            p_tlv_object->b_tlv_container_object = FALSE;
-            p_tlv_object->b_tlv_object_length_definite = FALSE;
-
-            /* Could not allocate memory. */
-            status = TLV_NO_MEMORY;
-        }
-    }
-    else
-    {
-        p_tlv_object->tlv_tag_length = 0U;
-        p_tlv_object->tlv_object_tag_number = 0;
-        p_tlv_object->tlv_curr_object_value_length = 0U;
-        p_tlv_object->tlv_curr_encoded_object_length = 0U;
-        p_tlv_object->b_tlv_container_object = FALSE;
-        p_tlv_object->b_tlv_object_length_definite = FALSE;
-
-        status = TLV_BAD_BUFFER_LENGTH;
-    }
-
-    /* Initialize the attributes of the TLV object. */
-    p_tlv_object->p_child_tlv_object_next = NULL;
-    p_tlv_object->p_child_tlv_object_previous = NULL;
-    p_tlv_object->p_tlv_child_tlv_object_list = NULL;
-    p_tlv_object->tlv_child_Count = 0;
-    p_tlv_object->tlv_max_encoded_object_length = 0;
-    p_tlv_object->tlv_max_length_of_endcoded_value_length = 0;
-    p_tlv_object->tlv_max_object_value_length = 0;
 
     /* Return status. */
     return status;

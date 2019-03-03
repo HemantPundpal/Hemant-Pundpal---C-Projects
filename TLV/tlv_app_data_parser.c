@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the app data layer to abstract parsing (decoding) of TLV encoded objects.
  *
- * Author: Hemant Pundpal                                   Date: 25 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 03 Mar 2019
  *
  */
 #define TLV_APP_DATA_SOURCE_CODE
@@ -22,11 +22,14 @@ static uint32_t check_parsed_tlv_object_app_data(tlv_object_t * p_tlv_parsed_obj
 /* Copy the encoded TLV buffer from the parsed TLV object to the app data mapped of the TLV object */
 static void_t copy_tlv_encoded_buffer(tlv_object_t * p_tlv_parsed_object, tlv_app_data_t * p_tlv_app_data);
 
+/* update app data from the decoded TLV object. */
+static void_t update_app_data(tlv_app_data_t * p_tlv_app_data);
+
 /* Decode and update app data integer value. */
 static void_t update_app_data_integer(tlv_app_data_t * p_tlv_app_data);
 
 /* Generic update app data with TLV value. */
-static void_t update_app_data(tlv_app_data_t * p_tlv_app_data);
+static void_t update_app_data_generic(tlv_app_data_t * p_tlv_app_data);
 
 /* Function to parse app data from TLV data buffer (first found TLV object is parsed.) */
 uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag)
@@ -47,25 +50,11 @@ uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_l
 
             if (status == TLV_SUCCESS)
             {
+                /* copy the encoded buffer from TLV object to app data. */
                 copy_tlv_encoded_buffer(tlv_parsed_object, p_tlv_app_data);
-                switch (p_tlv_app_data->tag_number)
-                {
-                    case TAG_INTEGER:
-                    {
-                        update_app_data_integer(p_tlv_app_data);
-                    }
-                    break;
-                    case TAG_INTEGER_UNSIGNED:
-                    {
-                        update_app_data(p_tlv_app_data);
-                    }
-                    break;
-                    default:
-                    {
-                        /* For rest just copy all the value octets in the app data. */
-                        update_app_data(p_tlv_app_data);
-                    }
-                }
+
+                /* update app data from the decoded TLV object. */
+                update_app_data(p_tlv_app_data);
 
                 /* Return the found tag. */
                 *p_parsed_tag = p_tlv_app_data->tag_number;
@@ -86,15 +75,18 @@ uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_l
 uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recursive)
 {
     TLV_STATUS status = TLV_FAIL;
-    /* THIS FUNCTION IS NOT IMPLEMENTED YET, SHOULD BE UPDATED IN NEXT 3 to 4 DAYS. */
+    tlv_app_data_t * p_tlv_app_data = NULL;
 
-    /* This function will be invoked by application, when application wants to find and decode a particular tag in the TLV data buffer received over the serial communication. */
-    /* The tag to find can be a child tag. To find a child tag, recursive should be set to TRUE by the application. */
+    p_tlv_app_data = tag_to_app_data_map[search_parse_tag];
 
-    if ((!p_tlv_data_buffer) || (!buffer_length) || (!search_parse_tag) || (b_recursive))
+    status = tlv_search_tag(p_tlv_data_buffer, buffer_length, search_parse_tag, b_recursive, p_tlv_app_data->p_tlv_object);
+
+    if (TLV_SUCCESS == status)
     {
-        /* Suppress the warning. */
+        /* update app data from the decoded TLV object. */
+        update_app_data(p_tlv_app_data);
     }
+
     return status;
 }
 
@@ -167,6 +159,42 @@ static void_t copy_tlv_encoded_buffer(tlv_object_t * p_tlv_parsed_object, tlv_ap
     }
 }
 
+/* update app data based on decoded TLV object. */
+static void_t update_app_data(tlv_app_data_t * p_tlv_app_data)
+{
+    /* Check if it is a container. */
+    if (p_tlv_app_data->b_container == FALSE)
+    {
+        switch (p_tlv_app_data->tag_number)
+        {
+            case TAG_INTEGER:
+            {
+                update_app_data_integer(p_tlv_app_data);
+            }
+            break;
+            case TAG_INTEGER_UNSIGNED:
+            {
+                update_app_data_generic(p_tlv_app_data);
+            }
+            break;
+            default:
+            {
+                /* For rest just copy all the value octets in the app data. */
+                update_app_data_generic(p_tlv_app_data);
+            }
+        }
+    }
+    else
+    {
+        for (uint32_t i = 0; i < p_tlv_app_data->u_size.child_count; i++)
+        {
+            /* This is a recursive call, please take care of depth and when modifying. */
+            update_app_data(p_tlv_app_data->p_child_app_data[i]);
+        }
+    }
+
+}
+
 /* Decode and update app data integer value. */
 static void_t update_app_data_integer(tlv_app_data_t * p_tlv_app_data)
 {
@@ -210,7 +238,7 @@ static void_t update_app_data_integer(tlv_app_data_t * p_tlv_app_data)
 }
 
 /* generic update app data with TLV value. */
-static void_t update_app_data(tlv_app_data_t * p_tlv_app_data)
+static void_t update_app_data_generic(tlv_app_data_t * p_tlv_app_data)
 {
     if (p_tlv_app_data->b_container == FALSE)
     {

@@ -19,4 +19,7 @@ uint32_t get_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffe
  /* Update parsed TLV object. */
 uint32_t update_parsed_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
 
+/* Update searched TLV object. */
+uint32_t update_searched_tlv_object(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, tlv_object_t * p_tlv_object);
+
 #endif /* __TLV_OBJECT_PARSER_H__ */

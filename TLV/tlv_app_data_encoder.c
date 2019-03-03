@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the app data layer to abstract TLV encoder.
  *
- * Author: Hemant Pundpal                                   Date: 21 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 02 Mar 2019
  *
  */
 #define TLV_APP_DATA_SOURCE_CODE
@@ -288,7 +288,7 @@ uint32_t tlv_app_data_send(uint32_t tag)
 {
     TLV_STATUS status = TLV_SUCCESS;
 
-    /* 
+    /*
      * - This function should actually send the data over the serial communication interface.
      * - May be it just writes TLV encoded buffer to the ring buffer.
      * - The serial driver reads the TLV encoded buffer from the ring buffer and send on the serial 
