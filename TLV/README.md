@@ -15,6 +15,7 @@ Notes:
 - Constructed application class lenght is encoded as indefinite lenght.
 - Although universal TAG_SEQUENCE_OF and TAG_SET_OF is not supported, application tags can be used.
 - Mapping provided by the app data layer for abstracting TLV encoded and decoder should be improved to support delete tag function.
+- A complete unit testing or boundary conditions testing is not yet perfromed.
 
 PHASE 1: TLV encoder and decoder V0.1
 - TLV encoder for universal tag (integer and UTF8 string) numbers and application tag (application class and context specific class) numbers.
