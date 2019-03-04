@@ -4,7 +4,7 @@
  * Description:
  * All error check API definitions required for the TLV encoder and decoder.
  *
- * Author: Hemant Pundpal                                   Date: 12 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 04 Mar 2019
  *
  */
 #define TLV_OBJECT_SOURCE_CODE
@@ -46,14 +46,12 @@ uint32_t create_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag, uin
     }
 
     /* Check TLV tag and constraints. */
-    TLV_STATUS status = TLV_SUCCESS;
+    TLV_STATUS status = TLV_FAIL;
     status = check_tag(tlv_tag, value_length);
-    if (status != TLV_SUCCESS)
+    if (TLV_SUCCESS == status)
     {
-        return status;
+        status = create_tlv_object(p_tlv_object, tlv_tag, p_tlv_value, value_length);
     }
-
-    status = create_tlv_object(p_tlv_object, tlv_tag, p_tlv_value, value_length);
 
     /* Return status. */
     return status;
@@ -70,10 +68,27 @@ uint32_t add_tlv_object_to_tlv_container_ec(tlv_object_t * p_container_tlv_objec
     }
 
     /* Check if the TLV object is a container. */
-    assert(p_container_tlv_object->b_tlv_container_object == FALSE);
-    if(p_container_tlv_object->b_tlv_container_object == FALSE)
+    assert(FALSE == p_container_tlv_object->b_tlv_container_object);
+    if(FALSE == p_container_tlv_object->b_tlv_container_object)
     {
         return TLV_NOT_A_CONTAINER;
+    }
+
+    /* Check is child TLV object already belongs to a container TLV object. */
+    assert(TRUE == p_child_tlv_object->b_tlv_has_a_parent);
+    if (TRUE == p_child_tlv_object->b_tlv_has_a_parent)
+    {
+        return TLV_CHILD_HAS_PARENT;
+    }
+
+    /* TLV object's parent cannot be added to its child. */
+    if (TRUE == p_container_tlv_object->b_tlv_has_a_parent)
+    {
+        assert(p_container_tlv_object->p_tlv_parent_tlv_object == p_child_tlv_object);
+        if (p_container_tlv_object->p_tlv_parent_tlv_object == p_child_tlv_object)
+        {
+            return TLV_PARENT_AS_CHILD;
+        }
     }
 
     /* Check if child TLV pointed is valid. */
@@ -83,8 +98,9 @@ uint32_t add_tlv_object_to_tlv_container_ec(tlv_object_t * p_container_tlv_objec
         return TLV_OBJECT_INVALID_PTR;
     }
 
-    assert(p_container_tlv_object->tlv_object_tag_number == p_child_tlv_object->tlv_object_tag_number);
-    if(p_container_tlv_object->tlv_object_tag_number == p_child_tlv_object->tlv_object_tag_number)
+    /* Container can not have itself as child. */
+    assert(p_container_tlv_object == p_child_tlv_object);
+    if(p_container_tlv_object == p_child_tlv_object)
     {
         return TLV_CANNOT_CONTAIN_ITSELF;
     }
@@ -121,14 +137,12 @@ uint32_t add_data_to_tlv_object_ec(tlv_object_t * p_tlv_object, uint32_t tlv_tag
     }
 
     /* Check TLV tag and constraints. */
-    TLV_STATUS status = TLV_SUCCESS;
+    TLV_STATUS status = TLV_FAIL;
     status = check_tag(tlv_tag, value_length);
-    if (status != TLV_SUCCESS)
+    if (TLV_SUCCESS == status)
     {
-        return status;
+        status = add_data_to_tlv_object(p_tlv_object, tlv_tag, p_tlv_value, value_length);
     }
-
-    status = add_data_to_tlv_object(p_tlv_object, tlv_tag, p_tlv_value, value_length);
 
     /* Return status. */
     return status;
@@ -223,8 +237,8 @@ static uint32_t check_tag(uint32_t tag_number, uint32_t data_length)
         /* add required check for each universal tag. */
         default:
         {
-            assert(tag_number == TAG_END_OF_CONTENT || tag_number > TAG_MAX);
-            if (tag_number == TAG_END_OF_CONTENT || tag_number > TAG_MAX)
+            assert((TAG_END_OF_CONTENT == tag_number) || (TAG_MAX < tag_number));
+            if ((TAG_END_OF_CONTENT == tag_number) || (TAG_MAX < tag_number))
             {
                 return TLV_TAG_NOT_SUPPORTED;
             }

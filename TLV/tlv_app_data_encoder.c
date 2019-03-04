@@ -47,8 +47,10 @@ uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_
     {
         /* Initialize the app data. */
         p_tlv_app_data->b_container = FALSE;
+        p_tlv_app_data->b_has_parent = FALSE;
         p_tlv_app_data->u_size.data_size = app_data_size;
         p_tlv_app_data->p_app_data = p_app_data_buffer;
+        p_tlv_app_data->p_parent_app_data = NULL;
 
         /* Allocate memory for TLV object to encode the app data into TLV object. */
         p_tlv_app_data->p_tlv_object = NULL;
@@ -56,7 +58,7 @@ uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_
         if (p_tlv_app_data->p_tlv_object != NULL)
         {
             /* Create the TLV object. */
-            if (app_data_tag == TAG_INTEGER_UNSIGNED)
+            if (TAG_INTEGER_UNSIGNED == app_data_tag)
             {
                 status = create_tlv_object(p_tlv_app_data->p_tlv_object, TAG_INTEGER, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
             }
@@ -72,7 +74,7 @@ uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_
             status = TLV_NO_MEMORY;
         }
 
-        if (status == TLV_SUCCESS)
+        if (TLV_SUCCESS == status)
         {
             /* TLV object created successfully. */
             /* Add key: tag_number and value: p_tlv_app_data to the map. */
@@ -108,8 +110,10 @@ uint32_t tlv_create_container_app_data(uint32_t container_app_data_tag)
     if (p_tlv_app_data != NULL)
     {
         p_tlv_app_data->b_container = TRUE;
+        p_tlv_app_data->b_has_parent = FALSE;
         p_tlv_app_data->u_size.child_count = 0U;
         p_tlv_app_data->p_app_data = NULL;
+        p_tlv_app_data->p_parent_app_data = NULL;
 
         /* Allocate memory for TLV object to encode the container type app data into container TLV object. */
         p_tlv_app_data->p_tlv_object = NULL;
@@ -126,7 +130,7 @@ uint32_t tlv_create_container_app_data(uint32_t container_app_data_tag)
             status = TLV_NO_MEMORY;
         }
 
-        if (status == TLV_SUCCESS)
+        if (TLV_SUCCESS == status)
         {
             /* Container TLV object created successfully. */
             /* Add key: tag_number and value: p_tlv_app_data to the map. */
@@ -164,6 +168,8 @@ uint32_t tlv_add_child_to_container_app_data(uint32_t container_app_data_tag, ui
         p_tlv_app_data->b_container = FALSE;
         p_tlv_app_data->u_size.data_size = app_data_size;
         p_tlv_app_data->p_app_data = p_app_data_buffer;
+        /* Get the container app data map. */
+        tlv_app_data_t * p_tlv_container_app_data = tag_to_app_data_map[container_app_data_tag];
 
         /* Allocate memory for TLV object to encode the app data into TLV object. */
         p_tlv_app_data->p_tlv_object = NULL;
@@ -171,13 +177,20 @@ uint32_t tlv_add_child_to_container_app_data(uint32_t container_app_data_tag, ui
         if (p_tlv_app_data->p_tlv_object != NULL)
         {
             /* Create the TLV object. */
-            if (child_app_data_tag == TAG_INTEGER_UNSIGNED)
+            if (TAG_INTEGER_UNSIGNED == child_app_data_tag)
             {
                 status = create_tlv_object(p_tlv_app_data->p_tlv_object, TAG_INTEGER, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
             }
             else
             {
                 status = create_tlv_object(p_tlv_app_data->p_tlv_object, child_app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
+            }
+
+            if (TLV_SUCCESS == status)
+            {
+                /* Child TLV object created successfully. */
+                /* Get the container tag app data */
+                status = add_tlv_object_to_tlv_container(p_tlv_container_app_data->p_tlv_object, p_tlv_app_data->p_tlv_object);
             }
         }
         else
@@ -187,25 +200,20 @@ uint32_t tlv_add_child_to_container_app_data(uint32_t container_app_data_tag, ui
             status = TLV_NO_MEMORY;
         }
 
-        if (status == TLV_SUCCESS)
-        {
-            /* Child TLV object created successfully. */
 
-            /* Get the container tag app data */
-            tlv_app_data_t * p_tlv_container_app_data = tag_to_app_data_map[container_app_data_tag];
-            status = add_tlv_object_to_tlv_container(p_tlv_container_app_data->p_tlv_object, p_tlv_app_data->p_tlv_object);
-            if (status == TLV_SUCCESS)
-            {
-                /* update container app data with child app data details. */
-                p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->u_size.child_count] = p_tlv_app_data;
-                p_tlv_container_app_data->u_size.child_count++;
-                p_tlv_app_data->tag_number = child_app_data_tag;
-            }
+        if (TLV_SUCCESS == status)
+        {
+            /* Add details of container (parent) in child app data. */
+            p_tlv_app_data->b_has_parent = TRUE;
+            p_tlv_app_data->p_parent_app_data = p_tlv_container_app_data;
+            /* update container app data with child app data details. */
+            p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->u_size.child_count] = p_tlv_app_data;
+            p_tlv_container_app_data->u_size.child_count++;
+            p_tlv_app_data->tag_number = child_app_data_tag;
         }
-
-        if(status != TLV_SUCCESS)
+        else
         {
-            /* Child TLV object was not created successfully, free the memory and return status. */
+            /* Child TLV object was not created and added successfully, free the memory and return status. */
             free(p_tlv_app_data->p_tlv_object);
             free(p_tlv_app_data);
         }
@@ -229,8 +237,11 @@ uint32_t tlv_add_child_tag_to_container_app_data(uint32_t container_app_data_tag
     tlv_app_data_t * p_tlv_container_app_data = tag_to_app_data_map[container_app_data_tag];
     tlv_app_data_t * p_tlv_child_app_data = tag_to_app_data_map[child_app_data_tag];
     status = add_tlv_object_to_tlv_container(p_tlv_container_app_data->p_tlv_object, p_tlv_child_app_data->p_tlv_object);
-    if (status == TLV_SUCCESS)
+    if (TLV_SUCCESS == status)
     {
+        /* Add details of container (parent) in child app data. */
+        p_tlv_child_app_data->b_has_parent = TRUE;
+        p_tlv_child_app_data->p_parent_app_data = p_tlv_container_app_data;
         /* update container app data with child app data details. */
         p_tlv_container_app_data->p_child_app_data[p_tlv_container_app_data->u_size.child_count] = p_tlv_child_app_data;
         p_tlv_container_app_data->u_size.child_count++;
@@ -246,7 +257,6 @@ uint32_t tlv_add_data_to_app_data(uint32_t app_data_tag)
 
     /* Get the app data map. */
     tlv_app_data_t * p_tlv_app_data = tag_to_app_data_map[app_data_tag];
-
     /* Update the application data to the TLV object. */
     status = add_data_to_tlv_object(p_tlv_app_data->p_tlv_object, app_data_tag, p_tlv_app_data->p_app_data, p_tlv_app_data->u_size.data_size);
 
@@ -273,7 +283,7 @@ uint32_t tlv_add_data_to_container_app_data(uint32_t container_app_data_tag, uin
         }
     }
 
-    if (b_child_found == FALSE)
+    if (FALSE == b_child_found)
     {
         /* Child tag was not found in the container. */
         status = TLV_CHILD_NOT_FOUND;
@@ -287,14 +297,11 @@ uint32_t tlv_add_data_to_container_app_data(uint32_t container_app_data_tag, uin
 uint32_t tlv_app_data_send(uint32_t tag)
 {
     TLV_STATUS status = TLV_SUCCESS;
-
     /*
      * - This function should actually send the data over the serial communication interface.
      * - May be it just writes TLV encoded buffer to the ring buffer.
-     * - The serial driver reads the TLV encoded buffer from the ring buffer and send on the serial 
-     * Communication channel.
-     * - This function will be updated to communicate with serial driver, currently is used for
-     * testing TLV encoded object.
+     * - The serial driver reads the TLV encoded buffer from the ring buffer and send on the serial Communication channel.
+     * - This function will be updated to communicate with serial driver, currently is used for testing TLV encoded object.
      */
     tlv_app_data_t * p_app_data = tag_to_app_data_map[tag];
 
@@ -316,7 +323,7 @@ uint32_t tlv_app_data_send(uint32_t tag)
         for (i = 0U; i < p_app_data->u_size.child_count; i++)
         {
             printf("Child %d - ", i);
-            if((p_app_data->p_child_app_data[i])->b_container == FALSE)
+            if(FALSE == (p_app_data->p_child_app_data[i])->b_container)
             {
                 for (uint32_t y = 0U; y < ((p_app_data->p_child_app_data[i])->p_tlv_object)->tlv_curr_encoded_object_length; y++)
                 {
@@ -330,14 +337,11 @@ uint32_t tlv_app_data_send(uint32_t tag)
                 tlv_app_data_send((p_app_data->p_child_app_data[i])->tag_number);
             }
         }
-        printf("\n");
 
         if(!((p_app_data->p_tlv_object)->b_tlv_object_length_definite))
         {
-            printf("0x%X (END OF CONTEXT for indefinite length)", TAG_END_OF_CONTENT);
+            printf("0x%X (END OF CONTEXT for indefinite length) \n", TAG_END_OF_CONTENT);
         }
-
-        printf("\n");
     }
     else
     {
@@ -352,14 +356,19 @@ uint32_t tlv_app_data_send(uint32_t tag)
     return status;
 }
 
-/* Function to delete a TLV object. */
+/*
+ * Function to delete a TLV object and removes the mapping between the TLV object and the app data.
+ * Function to delete a TLV container app data object or app data without a parent (container).
+ * Child in a container should be in linked list (instead of array) for deleting an app data included in a parent.
+ * This is not a problem with tlv.h and tlv.c (child TLV objects), as they are in listed using linked list.
+ */
 uint32_t tlv_delete_app_data(uint32_t tag)
 {
     TLV_STATUS status = TLV_FAIL;
 
     if (!tag)
     {
-        /* Suppress the warning. */
+        /* Suppress warning. */
     }
 
     return status;

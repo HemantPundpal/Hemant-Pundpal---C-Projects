@@ -8,7 +8,7 @@
  * Application code should #include this file to use the app data layer.
  * Note application can choose to directly access TLV encoder and decode by including tlv_api.h
  *
- * Author: Hemant Pundpal                                   Date: 21 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 04 Mar 2019
  *
  */
 #ifndef __TLV_APP_DATA_API_H__
@@ -60,14 +60,16 @@ typedef uint32_t                  TLV_STATUS;
 #define TLV_TAG_NOT_CREATED        0x7U
 #define TLV_MAX_CHILD_COUNT        0x8U
 #define TLV_CHILD_NOT_FOUND        0x9U
-#define TLV_CANNOT_WRITE_VALUE     0xAU
-#define TLV_CANNOT_CONTAIN_ITSELF  0xBU
-#define TLV_NOT_A_CONTAINER        0xCU
-#define TLV_BAD_BUFFER_LENGTH      0xDU
-#define TLV_TAG_PTR_INVALID        0XEU
-#define TLV_NO_TAG_FOUND           0xFU
-#define TLV_OBJECT_INVALID_PTR     0x10U
-#define TLV_BAD_TAG                0x11U
+#define TLV_CHILD_HAS_PARENT       0xAU
+#define TLV_PARENT_AS_CHILD        0xBU
+#define TLV_CANNOT_WRITE_VALUE     0xCU
+#define TLV_CANNOT_CONTAIN_ITSELF  0xDU
+#define TLV_NOT_A_CONTAINER        0xEU
+#define TLV_BAD_BUFFER_LENGTH      0xFU
+#define TLV_TAG_PTR_INVALID        0X10U
+#define TLV_NO_TAG_FOUND           0x11U
+#define TLV_OBJECT_INVALID_PTR     0x12U
+#define TLV_BAD_TAG                0x13U
 
 
 #define TLV_FAIL                   0xFFFFFFFFU
@@ -130,7 +132,7 @@ void_t tlv_initialize(void_t);
 /* Function to initialize and create TLV object of the app data with definite size. */
 uint32_t tlv_init_and_create_app_data(uint8_t * p_app_data_buffer, uint32_t app_data_size, uint32_t app_data_tag);
 
-/* Function to create constructed container TLV obect of the app data with indefinite size. */
+/* Function to create constructed container TLV object of the app data with indefinite size. */
 uint32_t tlv_create_container_app_data(uint32_t container_app_data_tag);
 
 /* Function to create TLV object of the app data and add to container (parent) TLV object as a child. */
@@ -154,8 +156,8 @@ uint32_t tlv_app_data_send(uint32_t tag);
  * - The tlv_parse_app_data() find the first valid tag and decodes the TLV encoded data, else returns error tag not found or bad TLV data buffer
  * - If the tag found of a definite length then the application is gets with tag received and associated value updated in the application variable.
  *
- * NOTE: If the tag found is of indefinite lenght (container type), then the application gets the tag received and the application should call tlv_search_parse_app_data() api 
- * to parse a child tag in the tag found with indefinite length (container type). Application can also parse the entire tag found with indefinite lenght (container type) 
+ * NOTE: If the tag found is of indefinite length (container type), then the application gets the tag received and the application should call tlv_search_parse_app_data() api
+ * to parse a child tag in the tag found with indefinite length (container type). Application can also parse the entire tag found with indefinite length (container type)
  * with all its child tags by calling tlv_search_parse_app_data() api.
  */
 uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t * p_parsed_tag);
@@ -166,7 +168,12 @@ uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_l
  */
 uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recursive);
 
-/* Function to delete a TLV object and removes the mapping between the TLV object and the app data. */
+/* 
+ * Function to delete a TLV object and removes the mapping between the TLV object and the app data.
+ * Function to delete a TLV container app data object or app data without a parent (container).
+ * Child in a container should be in linked list (instead of arrary) for deleting an app data included in a parent.
+ * This is not a problem with tlv.h and tlv.c (child tlv objects), as they are in listed using linked list.
+ */
 uint32_t tlv_delete_app_data(uint32_t tag);
 
 #endif /* TLV_SOURCE_CODE */

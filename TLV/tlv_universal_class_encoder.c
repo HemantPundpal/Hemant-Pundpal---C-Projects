@@ -90,6 +90,10 @@ static uint32_t create_integer_tlv_object(tlv_object_t * p_tlv_object, uint32_t 
 
     if (p_tlv_object->p_tlv_object_encoded_buffer != NULL)
     {
+        /* Set has a parent flag to FALSE. */
+        p_tlv_object->b_tlv_has_a_parent = FALSE;
+        p_tlv_object->p_tlv_parent_tlv_object = NULL;
+
         /* Initialize the TLV tag length. */
         p_tlv_object->tlv_tag_length = UNIVERSAL_TAG_LENGTH;
 
@@ -151,6 +155,10 @@ static uint32_t create_utf8_string_tlv_object(tlv_object_t * p_tlv_object, uint3
 
     if (p_tlv_object->p_tlv_object_encoded_buffer != NULL)
     {
+        /* Set has a parent flag to FALSE. */
+        p_tlv_object->b_tlv_has_a_parent = FALSE;
+        p_tlv_object->p_tlv_parent_tlv_object = NULL;
+
         /* Initialize the TLV tag length. */
         p_tlv_object->tlv_tag_length = UNIVERSAL_TAG_LENGTH;
 
@@ -209,7 +217,7 @@ void_t add_data_integer_tlv_object(tlv_object_t * p_tlv_object, const uint8_t * 
     /* get the number octets to encode for the integer value. */
     for (; int_value_octet_count > 1; int_value_octet_count--)
     {
-        if (p_tlv_buffer[(int_value_octet_count - 1U)] == (uint8_t)CHECK_POSITIVE || p_tlv_buffer[(int_value_octet_count - 1)] == (uint8_t)CHECK_NEGATIVE)
+        if (((uint8_t)CHECK_POSITIVE == p_tlv_buffer[(int_value_octet_count - 1U)]) || ((uint8_t)CHECK_NEGATIVE == p_tlv_buffer[(int_value_octet_count - 1)]))
         {
             /* Do nothing. */
         }

@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the TLV encoder and decoder.
  *
- * Author: Hemant Pundpal                                   Date: 02 Mar 2019
+ * Author: Hemant Pundpal                                   Date: 04 Mar 2019
  *
  */
 
@@ -54,6 +54,10 @@ uint32_t add_tlv_object_to_tlv_container(tlv_object_t * p_container_tlv_object, 
 {
     TLV_STATUS status = TLV_FAIL;
 
+    /* Set has a parent flag to TRUE in child TLV object and add reference to the parent (container). */
+    p_child_tlv_object->b_tlv_has_a_parent = TRUE;
+    p_child_tlv_object->p_tlv_parent_tlv_object = p_container_tlv_object;
+
     /* check if child TLV objects list is empty. */
     if (p_container_tlv_object->p_tlv_child_tlv_object_list)
     {
@@ -96,7 +100,7 @@ uint32_t add_data_to_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, c
     {
         /* If tag match, Check TLV object is a container and data value length is less than or equal to max value
         length of the TLV object */
-        if ((p_tlv_object->b_tlv_container_object == FALSE) && (p_tlv_object->tlv_max_object_value_length >= value_length))
+        if ((FALSE == p_tlv_object->b_tlv_container_object) && (p_tlv_object->tlv_max_object_value_length >= value_length))
         {
             /* Check if it is a universal tag number */
             if (tlv_tag <= TAG_MAX_UNIVERSAL)
@@ -138,7 +142,7 @@ uint32_t add_data_to_tlv_object(tlv_object_t * p_tlv_object, uint32_t tlv_tag, c
     else
     {
         /* Check if the TLV object is a container. */
-        if ((p_tlv_object->b_tlv_container_object == TRUE) && (p_tlv_object->tlv_child_Count != 0))
+        if ((TRUE == p_tlv_object->b_tlv_container_object) && (p_tlv_object->tlv_child_Count))
         {
             /* Get the child TLV objects of the container TLV object. */
             tlv_object_t * p_temp_tlv_Object = p_tlv_object->p_tlv_child_tlv_object_list;
@@ -205,7 +209,7 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
     tlv_object_t work_tlv_object;
     uint32_t buffer_index = 0;
 
-    /* Loop through the buffer to seach the tag and decode the TLV object. */
+    /* Loop through the buffer to search the tag and decode the TLV object. */
     for (buffer_index = 0; buffer_index < buffer_length;)
     {
         status = get_parsed_tlv_object(&p_tlv_data_buffer[buffer_index], (buffer_length - buffer_index), &work_tlv_object);
@@ -217,10 +221,10 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
                 (work_tlv_object.tlv_tag_length == p_tlv_object->tlv_tag_length) &&
                 (work_tlv_object.tlv_curr_encoded_object_length <= p_tlv_object->tlv_max_encoded_object_length) &&
                 (work_tlv_object.tlv_curr_object_value_length <= p_tlv_object->tlv_max_object_value_length) &&
-                (((p_tlv_object->b_tlv_container_object == TRUE) && (work_tlv_object.b_tlv_container_object == TRUE)) ||
-                ((p_tlv_object->b_tlv_container_object == FALSE) && (work_tlv_object.b_tlv_container_object == FALSE))) &&
-                (((p_tlv_object->b_tlv_object_length_definite == TRUE) && (work_tlv_object.b_tlv_object_length_definite == TRUE)) ||
-                ((p_tlv_object->b_tlv_object_length_definite == FALSE) && (work_tlv_object.b_tlv_object_length_definite == FALSE)))))
+                (((TRUE == p_tlv_object->b_tlv_container_object) && (TRUE == work_tlv_object.b_tlv_container_object)) ||
+                ((FALSE == p_tlv_object->b_tlv_container_object) && (FALSE == work_tlv_object.b_tlv_container_object))) &&
+                (((TRUE == p_tlv_object->b_tlv_object_length_definite) && (TRUE == work_tlv_object.b_tlv_object_length_definite)) ||
+                ((FALSE == p_tlv_object->b_tlv_object_length_definite) && (FALSE == work_tlv_object.b_tlv_object_length_definite)))))
             {
                 p_tlv_object->tlv_curr_encoded_object_length = work_tlv_object.tlv_curr_encoded_object_length;
                 p_tlv_object->tlv_curr_object_value_length = work_tlv_object.tlv_curr_object_value_length;
@@ -228,7 +232,7 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
             else
             {
                 /* Not matching, so jump to next TLV encoded object in the TLV encoded buffer. */
-                if (work_tlv_object.b_tlv_container_object == TRUE)
+                if (TRUE == work_tlv_object.b_tlv_container_object)
                 {
                     if (b_recursive)
                     {
@@ -236,14 +240,14 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
                     }
                     else
                     {
-                        if (work_tlv_object.b_tlv_object_length_definite == TRUE)
+                        if (TRUE == work_tlv_object.b_tlv_object_length_definite)
                         {
                             buffer_index += (work_tlv_object.tlv_curr_encoded_object_length + work_tlv_object.tlv_curr_object_value_length);
                         }
                         else
                         {
                             buffer_index += work_tlv_object.tlv_curr_encoded_object_length;
-                            while (p_tlv_data_buffer[buffer_index] != 0x0)
+                            while (p_tlv_data_buffer[buffer_index] != (uint8_t)TAG_END_OF_CONTENT)
                             {
                                 if (buffer_index < buffer_length)
                                 {
@@ -277,7 +281,7 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
             /* Update the searched TLV object. */
             status = update_searched_tlv_object(&p_tlv_data_buffer[buffer_index], (buffer_length - buffer_index), p_tlv_object);
 
-            if (p_tlv_object->b_tlv_container_object == TRUE)
+            if (TRUE == p_tlv_object->b_tlv_container_object)
             {
                 /* Searched TLV object is a container, so decode and update all the child TLV objects. */
                 buffer_index += p_tlv_object->tlv_curr_encoded_object_length;
@@ -309,7 +313,7 @@ uint32_t tlv_search_tag(const uint8_t * p_tlv_data_buffer, uint32_t buffer_lengt
                     p_search_tlv_child_object = p_search_tlv_child_object->p_child_tlv_object_next;
                 }
             }
-            /* Tag searched and TLV object udpated. */
+            /* Tag searched and TLV object updated. */
             break;
         }
     }

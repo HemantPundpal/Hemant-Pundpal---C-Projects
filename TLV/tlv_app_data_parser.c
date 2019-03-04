@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the app data layer to abstract parsing (decoding) of TLV encoded objects.
  *
- * Author: Hemant Pundpal                                   Date: 03 Mar 2019
+ * Author: Hemant Pundpal                                   Date: 02 Mar 2019
  *
  */
 #define TLV_APP_DATA_SOURCE_CODE
@@ -43,12 +43,12 @@ uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_l
     {
         /* Parse the first tag in the buffer. */
         status = parse_tlv_object(p_tlv_data_buffer, buffer_length, tlv_parsed_object);
-        if (status == TLV_SUCCESS)
+        if (TLV_SUCCESS == status)
         {
             tlv_app_data_t * p_tlv_app_data = NULL;
             status = check_parsed_tlv_object_app_data(tlv_parsed_object, &p_tlv_app_data);
 
-            if (status == TLV_SUCCESS)
+            if (TLV_SUCCESS == status)
             {
                 /* copy the encoded buffer from TLV object to app data. */
                 copy_tlv_encoded_buffer(tlv_parsed_object, p_tlv_app_data);
@@ -75,12 +75,13 @@ uint32_t tlv_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_l
 uint32_t tlv_search_parse_app_data(const uint8_t * p_tlv_data_buffer, uint32_t buffer_length, uint32_t search_parse_tag, bool_t b_recursive)
 {
     TLV_STATUS status = TLV_FAIL;
-    tlv_app_data_t * p_tlv_app_data = NULL;
 
+    /* get app data to tlv object mapping. */
+    tlv_app_data_t * p_tlv_app_data = NULL;
     p_tlv_app_data = tag_to_app_data_map[search_parse_tag];
 
+    /* Search and parse TLV object from the TLV data buffer. */
     status = tlv_search_tag(p_tlv_data_buffer, buffer_length, search_parse_tag, b_recursive, p_tlv_app_data->p_tlv_object);
-
     if (TLV_SUCCESS == status)
     {
         /* update app data from the decoded TLV object. */
@@ -98,25 +99,25 @@ static uint32_t check_parsed_tlv_object_app_data(tlv_object_t * p_tlv_parsed_obj
     /* check tag and associated constraints */
     status = check_tag(p_tlv_parsed_object->tlv_object_tag_number, p_tlv_parsed_object->tlv_curr_object_value_length);
 
-    if (status == TLV_SUCCESS)
+    if (TLV_SUCCESS == status)
     {
         *p_tlv_app_data = NULL;
         *p_tlv_app_data = tag_to_app_data_map[p_tlv_parsed_object->tlv_object_tag_number];
 
-        if ((*p_tlv_app_data == NULL) && (p_tlv_parsed_object->tlv_object_tag_number == TAG_INTEGER))
+        if ((!(*p_tlv_app_data)) && (TAG_INTEGER == p_tlv_parsed_object->tlv_object_tag_number))
         {
             *p_tlv_app_data = tag_to_app_data_map[TAG_INTEGER_UNSIGNED];
         }
 
-        if (*p_tlv_app_data == NULL)
+        if (!(*p_tlv_app_data))
         {
             /* No tag found. May be not created yet. */
             status = TLV_NO_TAG_FOUND;
         }
         else
         {
-            if ((!((p_tlv_parsed_object->b_tlv_container_object == TRUE) && ((*p_tlv_app_data)->b_container == TRUE))) &&
-                (!((p_tlv_parsed_object->b_tlv_container_object == FALSE) && ((*p_tlv_app_data)->b_container == FALSE))))
+            if ((!((TRUE == p_tlv_parsed_object->b_tlv_container_object) && (TRUE == (*p_tlv_app_data)->b_container))) &&
+                (!((FALSE == p_tlv_parsed_object->b_tlv_container_object) && (FALSE == (*p_tlv_app_data)->b_container))))
             {
                 status = TLV_NO_TAG_FOUND;
             }
@@ -146,7 +147,7 @@ static void_t copy_tlv_encoded_buffer(tlv_object_t * p_tlv_parsed_object, tlv_ap
             (p_tlv_app_data->p_tlv_object)->p_tlv_object_encoded_buffer[i] = (uint8_t)0x0U;
         }
     }
-    if (p_tlv_parsed_object->b_tlv_container_object == FALSE)
+    if (FALSE == p_tlv_parsed_object->b_tlv_container_object)
     {
         /* store start of the TLV value buffer. */
         uint32_t value_index = ((p_tlv_app_data->p_tlv_object)->tlv_curr_encoded_object_length
@@ -163,7 +164,7 @@ static void_t copy_tlv_encoded_buffer(tlv_object_t * p_tlv_parsed_object, tlv_ap
 static void_t update_app_data(tlv_app_data_t * p_tlv_app_data)
 {
     /* Check if it is a container. */
-    if (p_tlv_app_data->b_container == FALSE)
+    if (FALSE == p_tlv_app_data->b_container)
     {
         switch (p_tlv_app_data->tag_number)
         {
@@ -240,7 +241,7 @@ static void_t update_app_data_integer(tlv_app_data_t * p_tlv_app_data)
 /* generic update app data with TLV value. */
 static void_t update_app_data_generic(tlv_app_data_t * p_tlv_app_data)
 {
-    if (p_tlv_app_data->b_container == FALSE)
+    if (FALSE == p_tlv_app_data->b_container)
     {
         for (uint32_t i = 0; i < p_tlv_app_data->u_size.data_size; i++)
         {

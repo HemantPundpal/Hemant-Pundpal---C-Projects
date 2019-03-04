@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the TLV application tags encoder.
  *
- * Author: Hemant Pundpal                                   Date: 21 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 04 Feb 2019
  *
  */
 
@@ -90,6 +90,10 @@ static uint32_t create_indefinite_length_application_tlv_object(tlv_object_t * p
 
     if (p_tlv_object->p_tlv_object_encoded_buffer != NULL)
     {
+        /* Set has a parent flag to FALSE. */
+        p_tlv_object->b_tlv_has_a_parent = FALSE;
+        p_tlv_object->p_tlv_parent_tlv_object = NULL;
+
         /* Initialize the tLV encoded buffer. */
         p_tlv_object->tlv_max_encoded_object_length = tlv_encoded_buffer_length;
         p_tlv_object->tlv_curr_encoded_object_length = tlv_encoded_buffer_length;
@@ -188,6 +192,10 @@ static uint32_t create_definite_length_application_tlv_object(tlv_object_t * p_t
 
     if (p_tlv_object->p_tlv_object_encoded_buffer != NULL)
     {
+        /* Set has a parent flag to FALSE. */
+        p_tlv_object->b_tlv_has_a_parent = FALSE;
+        p_tlv_object->p_tlv_parent_tlv_object = NULL;
+
         /* Initialize the TLV tag length. */
         p_tlv_object->tlv_tag_length = tag_octets;
 

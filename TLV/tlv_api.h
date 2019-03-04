@@ -7,7 +7,7 @@
  *
  * Note application can choose to use the app data abstraction from TLV encoder decoder by including tlv_app_data_api.h
  *
- * Author: Hemant Pundpal                                   Date: 21 Feb 2019
+ * Author: Hemant Pundpal                                   Date: 04 Mar 2019
  *
  */
 #ifndef __TLV_API_H__
@@ -65,14 +65,16 @@
 #define TLV_CHILD_NOT_FOUND        0x9U
 */
 
-#define TLV_CANNOT_WRITE_VALUE     0xAU
-#define TLV_CANNOT_CONTAIN_ITSELF  0xBU
-#define TLV_NOT_A_CONTAINER        0xCU
-#define TLV_BAD_BUFFER_LENGTH      0xDU
-#define TLV_TAG_PTR_INVALID        0XEU
-#define TLV_NO_TAG_FOUND           0xFU
-#define TLV_OBJECT_INVALID_PTR     0x10U
-#define TLV_BAD_TAG                0x11U
+#define TLV_CHILD_HAS_PARENT       0xAU
+#define TLV_PARENT_AS_CHILD        0xBU
+#define TLV_CANNOT_WRITE_VALUE     0xCU
+#define TLV_CANNOT_CONTAIN_ITSELF  0xDU
+#define TLV_NOT_A_CONTAINER        0xEU
+#define TLV_BAD_BUFFER_LENGTH      0xFU
+#define TLV_TAG_PTR_INVALID        0X10U
+#define TLV_NO_TAG_FOUND           0x11U
+#define TLV_OBJECT_INVALID_PTR     0x12U
+#define TLV_BAD_TAG                0x13U
 
 
 
@@ -102,6 +104,11 @@ typedef struct tlv_object
      * - indefinite form if the encoding is constructed and is not all immediately available
      */
     bool_t                b_tlv_object_length_definite;
+
+    /* TLV object has a parent. */
+    bool_t                b_tlv_has_a_parent;
+
+    /* TLV object's parent TLV object pointer. */
 
     /* Number of child TLV object in a container of primitive TLV objects and/or constructed TLV objects. */
     uint32_t              tlv_child_Count;
@@ -140,6 +147,9 @@ typedef struct tlv_object
 
     /* Start of value octets in TLV encoded buffer */
     uint8_t             * p_tlv_value_buffer;
+
+    /* List of child TLV objects in a container TLV object. */
+    struct tlv_object   * p_tlv_parent_tlv_object;
 
     /* List of child TLV objects in a container TLV object. */
     struct tlv_object   * p_tlv_child_tlv_object_list;
