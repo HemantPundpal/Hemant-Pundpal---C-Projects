@@ -11,9 +11,10 @@ Reference:
 
 Notes:
 - Cannot add container tlv object as child to itself. Container not allowed to contain itself with same tag, need to create a context specific tag (Error checking is available). A sequence can be used.
-- Cannot add a parent tlv object to child tlv object (as a child). need to create a context specific tag to do so. (Error checking is not available). A sequence can be used.
+- Cannot add a parent tlv object to child tlv object (as a child). need to create a context specific tag to do so. (Error checking is available). A sequence can be used.
 - Constructed application class lenght is encoded as indefinite lenght.
 - Although universal TAG_SEQUENCE_OF and TAG_SET_OF is not supported, application tags can be used.
+- Mapping provided by the app data layer for abstracting TLV encoded and decoder should be improved to support delete tag function.
 
 PHASE 1: TLV encoder and decoder V0.1
 - TLV encoder for universal tag (integer and UTF8 string) numbers and application tag (application class and context specific class) numbers.
@@ -36,7 +37,7 @@ PHASE 2 - 1: TLV encoder and decoder V0.1.9
 NOTE: If the tag found is of indefinite length (container type), then the caller gets the container TLV object of indefinite length and the caller application should call tlv_search_tag() api to parse a child TLV 0bjects in the container TLV object. Application can also parse the entire container TLV object of indefinite length with all its child TLV objects by calling tlv_search_tag() api.
 - NO IMPACT TO THE API
 
-PHASE 2 - 2: TLV encoder and decoder V0.2
+PHASE 2 - 2: TLV encoder and decoder V0.2, V0.2.1
 - search and parse universal and indefinite lenght application container objects
 - Optimization of the tlv_object.
 - NO IMPACT TO THE API
@@ -45,6 +46,7 @@ PHASE 2 - 2: TLV encoder and decoder V0.2
 
 Upcoming updates:
 PHASE 3: TLV encoder and decoder V0.3 (to be planned)
+- Support for Delete tag api function.
 - TLV encoder and decoder support for univeral tag numbers - 'TAG_REAL', TAG_SET_OF and TAG_SEQUENCE_OF.
 - UPDATES WILL NOT IMPACT THE API
 
