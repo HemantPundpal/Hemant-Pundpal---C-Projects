@@ -54,10 +54,6 @@ uint32_t add_tlv_object_to_tlv_container(tlv_object_t * p_container_tlv_object, 
 {
     TLV_STATUS status = TLV_FAIL;
 
-    /* Set has a parent flag to TRUE in child TLV object and add reference to the parent (container). */
-    p_child_tlv_object->b_tlv_has_a_parent = TRUE;
-    p_child_tlv_object->p_tlv_parent_tlv_object = p_container_tlv_object;
-
     /* check if child TLV objects list is empty. */
     if (p_container_tlv_object->p_tlv_child_tlv_object_list)
     {
@@ -79,6 +75,10 @@ uint32_t add_tlv_object_to_tlv_container(tlv_object_t * p_container_tlv_object, 
         (p_container_tlv_object->p_tlv_child_tlv_object_list)->p_child_tlv_object_previous = p_child_tlv_object;
         (p_container_tlv_object->p_tlv_child_tlv_object_list)->p_child_tlv_object_next = p_child_tlv_object;
     }
+
+    /* Set has a parent flag to TRUE in child TLV object and add reference to the parent (container). */
+    p_child_tlv_object->b_tlv_has_a_parent = TRUE;
+    p_child_tlv_object->p_tlv_parent_tlv_object = p_container_tlv_object;
 
     /* increase child count. */
     p_container_tlv_object->tlv_child_Count++;
