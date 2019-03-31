@@ -1,5 +1,5 @@
 /*
- * Name: heap_sort.h
+ * Name: merge_sort.h
  *
  * Description:
  * All definitions and api function declarations required for the Merge Sort Algorithm.
