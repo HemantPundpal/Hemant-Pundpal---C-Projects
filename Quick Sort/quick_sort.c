@@ -4,7 +4,7 @@
  * Description:
  * All API definitions required for the Quick Sort Algorithm
  *
- * Author: Hemant Pundpal                                   Date: 29 Mar 2019
+ * Author: Hemant Pundpal                                   Date: 01 Apr 2019
  *
  */
 
@@ -66,6 +66,15 @@ void quick_sort(int32_t ArrIn[], uint32_t len)
                 }
             }
             iLeftElement++;
+        }
+        while (iRightElement > iFreeElement)
+        {
+            if (ArrIn[iRightElement] < iTemp)
+            {
+                ArrIn[iFreeElement] = ArrIn[iRightElement];
+                iFreeElement = iRightElement;
+            }
+            iRightElement--;
         }
 
         ArrIn[iFreeElement] = iTemp;
