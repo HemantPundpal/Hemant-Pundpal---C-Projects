@@ -156,6 +156,7 @@ error_assert.c
 The code is written such that it should be easy to use in multithreaded environment by protecting critical sections. Critical section is unified (not distributed) in the functions and is kept as small as possible.
 
 APPLICATION - DEMO (using TLV encoder and decoder API)
+
 tlv_app_main.c
 - THIS IS A DEMO CODE JUST TO EXCERCISE / DEMONSTRATE THE TLV ENCODER AND DECODER API (may not follow all coding standards)
 
